@@ -1,0 +1,46 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Subscription Plans</h1>
+    <p>Choose a plan that fits your outreach needs</p>
+  </header>
+
+  @if (user()) {
+    <div class="current-plan">
+      <span>Current: <strong>{{ user()?.subscriptionName ?? 'Free' }}</strong></span>
+      @if (user()?.subscriptionExpiry) {
+        <span>Expires: {{ user()?.subscriptionExpiry }}</span>
+      }
+      <span>Emails left today: {{ user()?.remainingEmailLimit ?? 0 }}</span>
+      <span>Exports left: {{ user()?.remainingExportLimit ?? 0 }}</span>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="alert">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <p class="loading">Loading plans...</p>
+  } @else {
+    <div class="plans-grid">
+      @for (plan of plans(); track plan.id) {
+        <div class="plan-card" [class.featured]="plan.name === 'Pro'">
+          <h3>{{ plan.name }}</h3>
+          <p class="desc">{{ plan.description }}</p>
+          <div class="price">₹{{ plan.amount | number:'1.0-0' }}<span>/{{ plan.validityDays }} days</span></div>
+          <ul>
+            <li>{{ plan.emailLimit }} emails / day</li>
+            <li>{{ plan.exportLimit }} exports / period</li>
+          </ul>
+          <button
+            class="buy-btn"
+            [disabled]="buying() === plan.id"
+            (click)="buy(plan)"
+          >
+            @if (buying() === plan.id) { Processing... } @else { Buy Now }
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

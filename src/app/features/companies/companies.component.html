@@ -1,0 +1,309 @@
+<div class="page-container companies-page">
+    <header class="page-header companies-header">
+        <div class="companies-header__copy">
+            <h1 class="companies-title">
+                <span class="companies-title__icon" aria-hidden="true">
+                    <app-icon-companies [size]="22" />
+                </span>
+                Companies
+            </h1>
+            <p>
+                {{ total() }} companies found &middot; {{ selected().size > 0 ? selected().size + ' selected' : 'Select companies to send emails' }}
+            </p>
+        </div>
+        <div class="companies-header__cta">
+            <button class="btn btn-primary" (click)="openSendDialog('all')" [disabled]="sending()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+                </svg>
+                Send to All Pending
+            </button>
+        </div>
+    </header>
+
+    <div class="toolbar companies-toolbar">
+        <div class="toolbar-search">
+            <span class="search-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+            </span>
+            <input class="input" placeholder="Search companies..." [ngModel]="search()" (ngModelChange)="search.set($event); onFilterChange()" />
+        </div>
+        <select class="select select--filter" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event); onFilterChange()">
+            @for (o of statusOptions; track o.value) {
+                <option [value]="o.value">{{ o.label }}</option>
+            }
+        </select>
+        <select class="select select--filter" [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="city">Sort by City</option>
+        </select>
+
+        <div class="toolbar-actions">
+            <button class="btn btn-ghost btn-sm" (click)="downloadTemplate()" data-tooltip="Download blank Excel template">
+                <app-icon-download [size]="14" /> Template
+            </button>
+            <button class="btn btn-ghost btn-sm" (click)="triggerFileInput()" [disabled]="!!importProgress()">
+                <app-icon-upload [size]="14" /> {{ importProgress() || 'Import Excel' }}
+            </button>
+            <input #fileRef type="file" accept=".xlsx,.xls" class="hidden-file-input" (change)="handleImportExcel($event)" />
+            <button class="btn btn-ghost btn-sm" (click)="exportExcel()">
+                <app-icon-export [size]="14" /> Export
+            </button>
+            <button class="btn btn-soft btn-sm" (click)="showAddModal.set(true)">
+                <app-icon-plus [size]="14" /> Add
+            </button>
+        </div>
+    </div>
+
+    <!-- Selection Action Bar -->
+    @if (selected().size > 0) {
+        <div class="selection-bar companies-selection">
+            <span class="companies-selection__count">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 6 9 17l-5-5"/>
+                </svg>
+                {{ selected().size }} selected
+            </span>
+            <button class="btn btn-success btn-sm" (click)="openSendDialog('selected')" [disabled]="sending()">
+                @if (sending()) {
+                    <span class="spinner spinner--sm"></span>
+                } @else {
+                    <app-icon-send [size]="14" />
+                }
+                Send to Selected
+            </button>
+            <button class="btn btn-ghost btn-sm" (click)="markNotInterested()">
+                <app-icon-x [size]="14" /> Not Interested
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="handleBulkDelete()">
+                <app-icon-trash [size]="14" /> Delete
+            </button>
+            <button class="btn btn-ghost btn-sm selection-bar__clear" (click)="clearSelection()">
+                <app-icon-x [size]="14" /> Clear
+            </button>
+        </div>
+    }
+
+    <!-- Send All button (kept for binding parity; primary CTA also in header) -->
+    <div class="send-all-row">
+        <button class="btn btn-primary" (click)="openSendDialog('all')" [disabled]="sending()">
+            Send to All Pending
+        </button>
+    </div>
+
+    <div class="table-wrapper companies-table">
+        @if (loading()) {
+            <div class="empty-state"><div class="spinner"></div></div>
+        } @else if (companies().length === 0) {
+            <div class="empty-state">
+                <span class="empty-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="12.01"/>
+                    </svg>
+                </span>
+                <h3>No companies yet</h3>
+                <p>Import an Excel file, add manually, or run the scraper to discover companies.</p>
+            </div>
+        } @else {
+            <table>
+                <thead>
+                    <tr>
+                        <th class="th-checkbox"><input type="checkbox" [checked]="selected().size === companies().length && companies().length > 0" (change)="toggleAll()" /></th>
+                        <th>Company</th>
+                        <th>HR Email</th>
+                        <th>Phone</th>
+                        <th>Email Score</th>
+                        <th>City</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (c of sortedCompanies(); track c.id) {
+                        <tr [class.selected]="selected().has(c.id)">
+                            <td class="td-checkbox"><input type="checkbox" [checked]="selected().has(c.id)" (change)="toggleSelect(c.id)" /></td>
+                            <td class="bold">
+                                <div class="company-cell">
+                                    <div class="company-cell__avatar" aria-hidden="true">{{ (c.name || '?').charAt(0) | uppercase }}</div>
+                                    <div class="company-cell__meta">
+                                        <div class="company-cell__name">{{ c.name }}</div>
+                                        @if (c.website) {
+                                            <div class="company-website">{{ c.website.replace('https://', '').replace('www.', '') }}</div>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                @if (c.best_email) {
+                                    <div class="contact-email">
+                                        <div class="contact-email__row">
+                                            <span class="contact-email__icon" aria-hidden="true">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                                                </svg>
+                                            </span>
+                                            <div class="mono company-email">
+                                                {{ c.best_email }}
+                                                @if (parseContacts(c.contacts_json).length > 1) {
+                                                    <select class="select select--inline" (change)="handleSetPrimary($any($event.target).value)" title="Change Primary Email">
+                                                        @for (ct of parseContacts(c.contacts_json); track ct.id; let first = $first) {
+                                                            <option [value]="ct.id">{{ ct.email }} {{ first ? '(Primary)' : '' }}</option>
+                                                        }
+                                                    </select>
+                                                }
+                                            </div>
+                                        </div>
+                                        @if (c.hr_name) {
+                                            <div class="company-hr-name">
+                                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                                                </svg>
+                                                {{ c.hr_name }}
+                                            </div>
+                                        }
+                                        @if (parseContacts(c.contacts_json).length > 1) {
+                                            <div class="contact-email__count">
+                                                {{ parseContacts(c.contacts_json).length }} contacts
+                                            </div>
+                                        }
+                                    </div>
+                                } @else {
+                                    <span class="text-muted">&mdash;</span>
+                                }
+                            </td>
+                            <td>
+                                @if (c.hr_phone) {
+                                    <span class="company-phone">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                        </svg>
+                                        {{ c.hr_phone }}
+                                    </span>
+                                } @else {
+                                    <span class="text-muted">&mdash;</span>
+                                }
+                            </td>
+                            <td>
+                                @if (c.email_score) {
+                                    <div class="score-cell">
+                                        <div class="progress-bar-container score-bar">
+                                            <div class="progress-bar-fill" [style.width]="c.email_score + '%'"></div>
+                                        </div>
+                                        <span class="score-label">{{ c.email_score }}</span>
+                                    </div>
+                                } @else {
+                                    <span class="text-muted">&mdash;</span>
+                                }
+                            </td>
+                            <td class="cell-city">{{ c.city || '&mdash;' }}</td>
+                            <td><span class="badge" [ngClass]="'badge-' + (c.status || 'pending')">{{ c.status || 'pending' }}</span></td>
+                            <td>
+                                <div class="action-cell">
+                                    <button class="btn btn-ghost btn-sm btn-icon" (click)="selectSingle(c.id); openSendDialog('selected')" data-tooltip="Send email">
+                                        <app-icon-send />
+                                    </button>
+                                    <button class="btn btn-danger btn-sm btn-icon" (click)="handleDelete(c.id)" data-tooltip="Delete">
+                                        <app-icon-trash [size]="14" />
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+    <!-- Add Company Modal -->
+    @if (showAddModal()) {
+        <div class="modal-overlay" (click)="showAddModal.set(false)">
+            <div class="modal companies-modal" (click)="$event.stopPropagation()">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        <span class="modal-title__icon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 5v14"/><path d="M5 12h14"/>
+                            </svg>
+                        </span>
+                        Add Company
+                    </div>
+                    <button class="btn btn-ghost btn-sm btn-icon" (click)="showAddModal.set(false)">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Company Name *</label>
+                        <input class="input" [(ngModel)]="addForm().name" placeholder="TCS, Infosys, Wipro..." />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Website</label>
+                        <input class="input" [(ngModel)]="addForm().website" placeholder="https://company.com" />
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">HR Email</label>
+                            <input class="input" [(ngModel)]="addForm().email" placeholder="hr@company.com" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">HR Name</label>
+                            <input class="input" [(ngModel)]="addForm().hr_name" placeholder="Priya Sharma" />
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">City</label>
+                            <input class="input" [(ngModel)]="addForm().city" placeholder="Pune" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Industry</label>
+                            <input class="input" [(ngModel)]="addForm().industry" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-ghost" (click)="showAddModal.set(false)">Cancel</button>
+                    <button class="btn btn-primary" (click)="handleAdd()">Add Company</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Send Campaign Modal -->
+    @if (showSendModal()) {
+        <div class="modal-overlay" (click)="showSendModal.set(false)">
+            <div class="modal companies-modal" (click)="$event.stopPropagation()">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        <span class="modal-title__icon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+                            </svg>
+                        </span>
+                        Send Emails
+                    </div>
+                    <button class="btn btn-ghost btn-sm btn-icon" (click)="showSendModal.set(false)">&times;</button>
+                </div>
+                <div class="alert alert-info">
+                    Sending to: <strong>{{ sendMode() === 'selected' ? selected().size + ' selected companies' : 'ALL pending companies' }}</strong>
+                </div>
+                <div class="form-group modal-form-group">
+                    <label class="form-label">Select Campaign *</label>
+                    <select class="select" [ngModel]="selectedCampaign()" (ngModelChange)="selectedCampaign.set($event)">
+                        @for (c of campaigns(); track c.id) {
+                            <option [value]="c.id">{{ c.name }}</option>
+                        }
+                    </select>
+                </div>
+                <div class="alert alert-warning">
+                    Emails will be sent with a delay between each one to avoid spam filters.
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-ghost" (click)="showSendModal.set(false)">Cancel</button>
+                    <button class="btn btn-success" (click)="handleSend()">Start Sending</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,8 @@
+<div class="empty-state" [style.padding]="padding">
+  <ng-content select="[icon]" />
+  <h3>{{ title }}</h3>
+  @if (message) {
+    <p>{{ message }}</p>
+  }
+  <ng-content />
+</div>

@@ -1,0 +1,334 @@
+:host {
+  display: block;
+}
+
+.companies-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ─── Header ─── */
+.companies-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-6);
+  height: auto;
+  min-height: 0;
+  margin-bottom: 24px;
+  padding: 0;
+  overflow: visible;
+  flex-wrap: wrap;
+}
+
+.companies-header__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  overflow: visible;
+
+  p {
+    margin: 0;
+    line-height: 1.5;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+}
+
+.companies-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+  font-size: 1.625rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.4;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+.companies-title__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-50);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.companies-header__cta {
+  flex-shrink: 0;
+}
+
+/* ─── Floating toolbar ─── */
+.companies-toolbar {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-2xl);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-card);
+  margin-bottom: var(--space-5);
+  gap: var(--space-3);
+}
+
+.select--filter {
+  width: 160px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--bg-secondary);
+  border-color: transparent;
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+/* ─── Selection bar ─── */
+.companies-selection {
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-3) var(--space-5);
+}
+
+.companies-selection__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.selection-bar__clear {
+  margin-left: auto;
+}
+
+.send-all-row {
+  display: none;
+}
+
+/* ─── Table ─── */
+.companies-table {
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-card);
+  background: var(--bg-surface);
+  max-height: min(70vh, 900px);
+}
+
+.company-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.company-cell__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(145deg, var(--color-primary-100), var(--color-primary-50));
+  color: var(--color-primary-dark);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+
+.company-cell__meta {
+  min-width: 0;
+}
+
+.company-cell__name {
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.company-website {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+/* ─── Contact email (enhanced CRM contact UI) ─── */
+.contact-email {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.contact-email__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.contact-email__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--color-sky-50);
+  color: var(--color-sky);
+  flex-shrink: 0;
+}
+
+.company-email {
+  color: var(--color-primary-dark);
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.select--inline {
+  padding: 0 4px;
+  font-size: 0.7rem;
+  height: 22px;
+  width: 22px;
+  min-height: 22px;
+  border-radius: var(--radius-full);
+  background: var(--bg-secondary);
+  border-color: transparent;
+  flex-shrink: 0;
+}
+
+.company-hr-name {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding-left: 32px;
+}
+
+.contact-email__count {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 32px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-50);
+  color: var(--color-primary-dark);
+  font-size: 0.65rem;
+  font-weight: 600;
+  width: fit-content;
+  letter-spacing: 0.01em;
+}
+
+.company-phone {
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  svg {
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.score-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5, 6px);
+}
+
+.score-bar {
+  width: 56px;
+  height: 5px;
+  border-radius: var(--radius-full);
+}
+
+.score-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.cell-city {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.th-checkbox,
+.td-checkbox {
+  width: 44px;
+  padding-left: 18px !important;
+}
+
+.action-cell {
+  display: flex;
+  gap: var(--space-1, 4px);
+}
+
+/* ─── Modals ─── */
+.companies-modal {
+  border-radius: var(--radius-2xl);
+  max-width: 540px;
+}
+
+.modal-title__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-50);
+  color: var(--color-primary);
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.modal-form-group {
+  margin-bottom: var(--space-4);
+}
+
+@media (max-width: 900px) {
+  .companies-header__cta {
+    width: 100%;
+
+    .btn {
+      width: 100%;
+    }
+  }
+
+  .select--filter {
+    width: 100%;
+    max-width: none;
+  }
+
+  .send-all-row {
+    display: none;
+  }
+}

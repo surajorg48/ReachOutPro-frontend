@@ -1,0 +1,18 @@
+@if (popup.visible()) {
+  <div class="overlay" (click)="popup.hide()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h2>Upgrade to Pro</h2>
+      <p class="lead">You have reached your free usage limit.</p>
+      <p class="subtitle">Unlock:</p>
+      <ul>
+        <li>✔ More Emails</li>
+        <li>✔ More Exports</li>
+        <li>✔ Priority Access</li>
+      </ul>
+      <div class="actions">
+        <button type="button" class="btn-secondary" (click)="popup.hide()">Cancel</button>
+        <button type="button" class="btn-primary" (click)="upgrade()">Upgrade Now</button>
+      </div>
+    </div>
+  </div>
+}

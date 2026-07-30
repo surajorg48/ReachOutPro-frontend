@@ -1,0 +1,224 @@
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="brand-bar">
+      <div class="brand-mark">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+      </div>
+      <span class="brand-name">ReachOut <span class="brand-pro">Pro</span></span>
+    </div>
+
+    <div class="mock-wrap">
+      <svg class="product-mock" width="360" height="280" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="regMockCard" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="100%" stop-color="#F5F7FA"/>
+          </linearGradient>
+          <filter id="regSoftShadow" x="-10%" y="-10%" width="120%" height="130%">
+            <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0D9488" flood-opacity="0.12"/>
+          </filter>
+        </defs>
+        <rect x="24" y="20" width="352" height="260" rx="20" fill="url(#regMockCard)" stroke="#E5EAF0" stroke-width="1" filter="url(#regSoftShadow)"/>
+        <rect x="44" y="40" width="312" height="32" rx="10" fill="#F0FDFA"/>
+        <rect x="58" y="50" width="110" height="10" rx="3" fill="#99F6E4"/>
+        <circle cx="328" cy="56" r="10" fill="#14B8A6"/>
+
+        <rect x="44" y="88" width="152" height="172" rx="14" fill="#FFFFFF" stroke="#E5EAF0"/>
+        <rect x="58" y="104" width="72" height="8" rx="2" fill="#5EEAD4"/>
+        <rect x="58" y="128" width="124" height="32" rx="8" fill="#F0FDFA"/>
+        <circle cx="74" cy="144" r="8" fill="#0D9488"/>
+        <rect x="90" y="140" width="58" height="7" rx="2" fill="#5EEAD4"/>
+        <rect x="58" y="172" width="124" height="32" rx="8" fill="#F5F7FA"/>
+        <circle cx="74" cy="188" r="8" fill="#99F6E4"/>
+        <rect x="90" y="184" width="52" height="7" rx="2" fill="#CBD5E1"/>
+        <rect x="58" y="216" width="124" height="32" rx="8" fill="#F5F7FA"/>
+        <circle cx="74" cy="232" r="8" fill="#99F6E4"/>
+        <rect x="90" y="228" width="46" height="7" rx="2" fill="#CBD5E1"/>
+
+        <rect x="210" y="88" width="150" height="78" rx="14" fill="#FFFFFF" stroke="#E5EAF0"/>
+        <rect x="224" y="104" width="80" height="8" rx="2" fill="#99F6E4"/>
+        <rect x="224" y="126" width="122" height="26" rx="8" fill="#ECFDF5"/>
+        <rect x="236" y="133" width="70" height="10" rx="3" fill="#0D9488"/>
+        <rect x="316" y="131" width="20" height="14" rx="4" fill="#CCFBF1"/>
+
+        <rect x="210" y="180" width="150" height="80" rx="14" fill="#FFFFFF" stroke="#E5EAF0"/>
+        <rect x="224" y="194" width="70" height="8" rx="2" fill="#99F6E4"/>
+        <rect x="224" y="222" width="16" height="24" rx="3" fill="#CCFBF1"/>
+        <rect x="246" y="210" width="16" height="36" rx="3" fill="#14B8A6"/>
+        <rect x="268" y="216" width="16" height="30" rx="3" fill="#5EEAD4"/>
+        <rect x="290" y="204" width="16" height="42" rx="3" fill="#0D9488"/>
+        <circle cx="334" cy="226" r="12" fill="#F0FDFA"/>
+        <circle cx="334" cy="226" r="6" fill="#0D9488"/>
+      </svg>
+    </div>
+
+    <div class="left-copy">
+      <h2 class="left-title">Power your outreach sourcing</h2>
+      <p class="left-subtitle">Launch workspaces with campaign analytics, organization insights, and smart automation.</p>
+      <div class="dots">
+        <span class="dot"></span>
+        <span class="dot active"></span>
+        <span class="dot"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="card-brand">
+        <div class="card-brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <span class="card-brand-text">ReachOut <span>Pro</span></span>
+      </div>
+
+      <div class="card-header">
+        <h1 class="card-title">Create Account</h1>
+        <p class="card-subtitle">Get started with your enterprise workspace</p>
+      </div>
+
+      @if (step() === 'form') {
+        <form (submit)="onRegister($event)" class="auth-form">
+          <div class="float-field">
+            <input
+              id="orgName"
+              type="text"
+              [(ngModel)]="form.organizationName"
+              name="orgName"
+              placeholder=" "
+              required
+              [disabled]="loading()"
+              class="float-input"
+              autocomplete="organization"
+            />
+            <label for="orgName" class="float-label">Organization Name</label>
+          </div>
+
+          <div class="float-field">
+            <input
+              id="fullName"
+              type="text"
+              [(ngModel)]="form.fullName"
+              name="fullName"
+              placeholder=" "
+              required
+              [disabled]="loading()"
+              class="float-input"
+              autocomplete="name"
+            />
+            <label for="fullName" class="float-label">Full Name</label>
+          </div>
+
+          <div class="float-field">
+            <input
+              id="email"
+              type="email"
+              [(ngModel)]="form.email"
+              name="email"
+              placeholder=" "
+              required
+              [disabled]="loading()"
+              class="float-input"
+              autocomplete="email"
+            />
+            <label for="email" class="float-label">Business Email</label>
+          </div>
+
+          <div class="float-field">
+            <input
+              id="phone"
+              type="tel"
+              [(ngModel)]="form.phone"
+              name="phone"
+              placeholder=" "
+              [disabled]="loading()"
+              class="float-input"
+              autocomplete="tel"
+            />
+            <label for="phone" class="float-label">Phone Number (optional)</label>
+          </div>
+
+          @if (error()) {
+            <div class="alert-error">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span>{{ error() }}</span>
+            </div>
+          }
+
+          <button type="submit" [disabled]="loading() || !isValid()" class="btn-primary">
+            @if (loading()) {
+              <span class="spinner"></span>
+            } @else {
+              Create Workspace
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+              </svg>
+            }
+          </button>
+        </form>
+
+        <p class="card-footer">
+          Already have an account? <a routerLink="/auth/login">Sign in</a>
+        </p>
+      }
+
+      @if (step() === 'otp') {
+        <div class="otp-panel">
+          <div class="otp-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <p class="otp-copy">
+            We sent a verification code to<br/>
+            <span class="otp-email">{{ form.email }}</span>
+          </p>
+
+          <app-otp-input (code)="onOtpComplete($event)" />
+
+          @if (error()) {
+            <div class="alert-error">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span>{{ error() }}</span>
+            </div>
+          }
+
+          <button
+            (click)="onVerifyOtp()"
+            [disabled]="loading() || otpCode().length !== 6"
+            class="btn-primary"
+          >
+            @if (loading()) {
+              <span class="spinner"></span>
+            } @else {
+              Verify &amp; Start
+            }
+          </button>
+
+          <div class="otp-actions">
+            <button (click)="onResendOtp()" class="text-btn" [disabled]="loading()">Resend code</button>
+            <span class="sep">&middot;</span>
+            <button (click)="goBack()" class="text-btn">Change details</button>
+          </div>
+        </div>
+      }
+
+      <div class="legal">
+        <a href="#">Terms of Service</a>
+        <span class="sep">&middot;</span>
+        <a href="#">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+</div>

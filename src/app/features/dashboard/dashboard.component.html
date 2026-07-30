@@ -1,0 +1,236 @@
+<div class="page-container dash">
+  <!-- Welcome header -->
+  <header class="dash-welcome">
+    <div class="dash-welcome__copy">
+      <p class="dash-welcome__eyebrow">ReachOut Pro</p>
+      <h1 class="dash-welcome__title">Overview</h1>
+      <p class="dash-welcome__sub">Your outreach performance at a glance — companies, campaigns, and delivery health.</p>
+    </div>
+  </header>
+
+  <!-- KPI analytics -->
+  <section class="dash-kpis" aria-label="Key metrics">
+    @if (loading()) {
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <app-skeleton-stat-card />
+      }
+    } @else {
+      @for (card of statCards(); track card.label; let idx = $index) {
+        <article class="kpi-card" [ngClass]="card.color" [style.--kpi-delay]="(idx * 60) + 'ms'">
+          <div class="kpi-card__top">
+            <div class="stat-icon-wrap" [ngClass]="card.color">
+              <ng-container *ngComponentOutlet="card.icon; inputs: { size: 20 }"></ng-container>
+            </div>
+            <span class="kpi-card__trend" aria-hidden="true">
+              <span class="kpi-card__trend-bar"></span>
+              <span class="kpi-card__trend-bar"></span>
+              <span class="kpi-card__trend-bar"></span>
+            </span>
+          </div>
+          <div class="stat-value">{{ card.value | number }}</div>
+          <div class="stat-label">{{ card.label }}</div>
+        </article>
+      }
+    }
+  </section>
+
+  <!-- Charts + week strip -->
+  <section class="dash-analytics">
+    <div class="chart-container chart-wide dash-panel dash-panel--bar">
+      <div class="dash-panel__head">
+        <div>
+          <div class="chart-title">Email Performance</div>
+          <div class="chart-subtitle">Overview of all email activity</div>
+        </div>
+      </div>
+      @if (loading()) {
+        <app-skeleton-card [height]="180" />
+      } @else {
+        <div class="chart-canvas">
+          <canvas baseChart
+            [data]="barChartData()"
+            [options]="barChartOptions"
+            [type]="'bar'">
+          </canvas>
+        </div>
+      }
+    </div>
+
+    <div class="chart-container chart-narrow dash-panel dash-panel--pie">
+      <div class="dash-panel__head">
+        <div>
+          <div class="chart-title">Company Status</div>
+          <div class="chart-subtitle">Contact progress breakdown</div>
+        </div>
+      </div>
+      @if (loading()) {
+        <app-skeleton-card [height]="180" />
+      } @else if (stats().total === 0) {
+        <div class="chart-empty">
+          <span>No data yet</span>
+        </div>
+      } @else {
+        <div class="chart-donut-wrapper">
+          <div class="chart-canvas chart-canvas--donut">
+            <canvas baseChart
+              [data]="pieChartData()"
+              [options]="pieChartOptions"
+              [type]="'doughnut'">
+            </canvas>
+          </div>
+          <div class="donut-center">
+            <div class="donut-value">{{ stats().total }}</div>
+            <div class="donut-label">TOTAL</div>
+          </div>
+        </div>
+      }
+
+      @if (!loading() && pieLegend().length > 0) {
+        <div class="chart-legend">
+          @for (d of pieLegend(); track d.name) {
+            <div class="legend-item">
+              <div class="legend-dot" [style.background]="d.color"></div>
+              <span class="legend-name">{{ d.name }}</span>
+              <span class="legend-value">{{ d.value }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Visual-only week strip -->
+    <aside class="dash-week dash-panel" aria-label="This week">
+      <div class="dash-week__head">
+        <div class="chart-title">This Week</div>
+        <div class="chart-subtitle">Schedule snapshot</div>
+      </div>
+      <div class="week-strip">
+        <div class="week-day">
+          <span class="week-day__label">Mon</span>
+          <span class="week-day__num">20</span>
+        </div>
+        <div class="week-day">
+          <span class="week-day__label">Tue</span>
+          <span class="week-day__num">21</span>
+        </div>
+        <div class="week-day">
+          <span class="week-day__label">Wed</span>
+          <span class="week-day__num">22</span>
+        </div>
+        <div class="week-day">
+          <span class="week-day__label">Thu</span>
+          <span class="week-day__num">23</span>
+        </div>
+        <div class="week-day">
+          <span class="week-day__label">Fri</span>
+          <span class="week-day__num">24</span>
+        </div>
+        <div class="week-day">
+          <span class="week-day__label">Sat</span>
+          <span class="week-day__num">25</span>
+        </div>
+        <div class="week-day week-day--today">
+          <span class="week-day__label">Sun</span>
+          <span class="week-day__num">26</span>
+        </div>
+      </div>
+      <div class="week-strip__footer">
+        <span class="week-strip__hint">Today highlighted</span>
+        <span class="week-strip__pill">Jul 2026</span>
+      </div>
+    </aside>
+  </section>
+
+  <!-- Quick actions + activity -->
+  <section class="dash-bottom">
+    <div class="chart-container dash-panel dash-panel--actions">
+      <div class="dash-panel__head">
+        <div class="chart-title">Quick Actions</div>
+        <div class="chart-subtitle">Jump into common workflows</div>
+      </div>
+
+      <div class="quick-actions-list">
+        @for (action of quickActions; track action.path) {
+          <button class="quick-action-btn" (click)="navigate(action.path)">
+            <div class="qa-icon" [style.background]="action.color + '12'" [style.color]="action.color">
+              <ng-container *ngComponentOutlet="action.icon; inputs: { size: 16 }"></ng-container>
+            </div>
+            <div class="qa-content">
+              <div class="qa-label">{{ action.label }}</div>
+              <div class="qa-sub">{{ action.sub }}</div>
+            </div>
+            <app-icon-chevron-right class="qa-chevron" />
+          </button>
+        }
+      </div>
+
+      @if (!loading() && stats().totalSent > 0) {
+        <div class="success-banner">
+          <app-icon-trend-up [size]="18" class="success-banner-icon" />
+          <div>
+            <div class="success-banner-value">{{ successRate() }}%</div>
+            <div class="success-banner-label">Email delivery success rate</div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="chart-container dash-panel dash-panel--activity">
+      <div class="chart-header activity-header">
+        <div>
+          <div class="chart-title">Recent Activity</div>
+          <div class="chart-subtitle">Latest outbound emails</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" (click)="navigate('/email-log')">
+          View all
+        </button>
+      </div>
+
+      @if (loading()) {
+        <div class="activity-loading">
+          @for (i of [1,2,3,4,5]; track i) {
+            <div class="activity-loading-row">
+              <div class="skeleton activity-skeleton-dot"></div>
+              <div class="activity-skeleton-content">
+                <div class="skeleton activity-skeleton-line"></div>
+              </div>
+              <div class="skeleton activity-skeleton-badge"></div>
+            </div>
+          }
+        </div>
+      } @else if (recentLogs().length === 0) {
+        <div class="empty-state">
+          <app-icon-activity [size]="32" style="opacity: 0.2; display: flex;" />
+          <p>No emails sent yet</p>
+        </div>
+      } @else {
+        <div class="activity-table">
+          <div class="activity-table__head">
+            <span>Recipient</span>
+            <span>Status</span>
+            <span>Sent</span>
+          </div>
+          <div class="activity-list">
+            @for (log of recentLogs(); track log.id) {
+              <div class="activity-item">
+                <div class="activity-dot" [ngClass]="log.status"></div>
+                <div class="activity-content">
+                  <div class="activity-name">{{ log.company_name || log.recipient_email }}</div>
+                  <div class="activity-email">{{ log.recipient_email }}</div>
+                </div>
+                <div class="activity-meta">
+                  <span class="badge" [ngClass]="'badge-' + log.status">
+                    {{ log.status }}
+                  </span>
+                  <span class="activity-time">
+                    {{ log.sent_at ? (log.sent_at | date:'MMM d, HH:mm') : '—' }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+</div>

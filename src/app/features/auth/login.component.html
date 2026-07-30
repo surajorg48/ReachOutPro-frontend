@@ -1,0 +1,185 @@
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="brand-bar">
+      <div class="brand-mark">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+      </div>
+      <span class="brand-name">ReachOut <span class="brand-pro">Pro</span></span>
+    </div>
+
+    <div class="mock-wrap">
+      <svg class="product-mock" width="360" height="280" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="mockCard" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="100%" stop-color="#F5F7FA"/>
+          </linearGradient>
+          <filter id="softShadow" x="-10%" y="-10%" width="120%" height="130%">
+            <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0D9488" flood-opacity="0.12"/>
+          </filter>
+        </defs>
+        <rect x="24" y="20" width="352" height="260" rx="20" fill="url(#mockCard)" stroke="#E5EAF0" stroke-width="1" filter="url(#softShadow)"/>
+        <rect x="44" y="40" width="312" height="28" rx="8" fill="#F0FDFA"/>
+        <circle cx="58" cy="54" r="4" fill="#F87171"/>
+        <circle cx="72" cy="54" r="4" fill="#FBBF24"/>
+        <circle cx="86" cy="54" r="4" fill="#14B8A6"/>
+        <rect x="110" y="48" width="90" height="8" rx="2" fill="#99F6E4"/>
+
+        <rect x="44" y="84" width="150" height="176" rx="14" fill="#FFFFFF" stroke="#E5EAF0"/>
+        <rect x="58" y="100" width="70" height="8" rx="2" fill="#99F6E4"/>
+        <rect x="58" y="122" width="122" height="30" rx="8" fill="#F0FDFA"/>
+        <circle cx="74" cy="137" r="8" fill="#14B8A6"/>
+        <rect x="90" y="133" width="60" height="7" rx="2" fill="#5EEAD4"/>
+        <rect x="58" y="164" width="122" height="30" rx="8" fill="#F5F7FA"/>
+        <circle cx="74" cy="179" r="8" fill="#99F6E4"/>
+        <rect x="90" y="175" width="54" height="7" rx="2" fill="#CBD5E1"/>
+        <rect x="58" y="206" width="122" height="30" rx="8" fill="#F5F7FA"/>
+        <circle cx="74" cy="221" r="8" fill="#99F6E4"/>
+        <rect x="90" y="217" width="48" height="7" rx="2" fill="#CBD5E1"/>
+
+        <rect x="208" y="84" width="148" height="78" rx="14" fill="#FFFFFF" stroke="#E5EAF0"/>
+        <circle cx="240" cy="123" r="20" fill="none" stroke="#CCFBF1" stroke-width="5"/>
+        <circle cx="240" cy="123" r="20" fill="none" stroke="#0D9488" stroke-width="5" stroke-dasharray="88" stroke-dashoffset="28" stroke-linecap="round"/>
+        <rect x="272" y="110" width="64" height="8" rx="2" fill="#5EEAD4"/>
+        <rect x="272" y="126" width="44" height="6" rx="2" fill="#CBD5E1"/>
+
+        <rect x="208" y="176" width="148" height="84" rx="14" fill="#FFFFFF" stroke="#E5EAF0"/>
+        <rect x="224" y="204" width="14" height="36" rx="3" fill="#CCFBF1"/>
+        <rect x="244" y="192" width="14" height="48" rx="3" fill="#14B8A6"/>
+        <rect x="264" y="210" width="14" height="30" rx="3" fill="#5EEAD4"/>
+        <rect x="284" y="198" width="14" height="42" rx="3" fill="#0D9488"/>
+        <circle cx="328" cy="218" r="14" fill="#F0FDFA"/>
+        <path d="M323 218l3.5 3.5 7-7" stroke="#0D9488" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <div class="left-copy">
+      <h2 class="left-title">Scale HR sourcing with confidence</h2>
+      <p class="left-subtitle">Campaigns, resume matching, and outreach analytics in one enterprise workspace.</p>
+      <div class="dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="card-brand">
+        <div class="card-brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <span class="card-brand-text">ReachOut <span>Pro</span></span>
+      </div>
+
+      <div class="card-header">
+        <h1 class="card-title">Welcome back</h1>
+        <p class="card-subtitle">Sign in with a one-time code sent to your email</p>
+      </div>
+
+      @if (step() === 'email') {
+        <form (submit)="onSendOtp($event)" class="auth-form">
+          <div class="float-field">
+            <input
+              id="email"
+              type="email"
+              [(ngModel)]="email"
+              name="email"
+              placeholder=" "
+              required
+              [disabled]="loading()"
+              class="float-input"
+              autocomplete="email"
+            />
+            <label for="email" class="float-label">Business Email</label>
+          </div>
+
+          <div class="helper-row">
+            <label class="remember">
+              <input type="checkbox" name="remember" checked />
+              <span>Remember this device</span>
+            </label>
+            <a href="mailto:support@reachoutpro.com" class="helper-link">Need assistance?</a>
+          </div>
+
+          @if (error()) {
+            <div class="alert-error">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span>{{ error() }}</span>
+            </div>
+          }
+
+          <button type="submit" [disabled]="loading() || !email" class="btn-primary">
+            @if (loading()) {
+              <span class="spinner"></span>
+            } @else {
+              Continue with OTP
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+              </svg>
+            }
+          </button>
+        </form>
+
+        <p class="card-footer">
+          New to ReachOut Pro? <a routerLink="/auth/register">Create Account</a>
+        </p>
+      }
+
+      @if (step() === 'otp') {
+        <div class="otp-panel">
+          <div class="otp-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <p class="otp-copy">
+            We've sent a 6-digit confirmation code to<br/>
+            <span class="otp-email">{{ email }}</span>
+          </p>
+
+          <app-otp-input (code)="onOtpComplete($event)" />
+
+          @if (error()) {
+            <div class="alert-error">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span>{{ error() }}</span>
+            </div>
+          }
+
+          <button (click)="onVerifyOtp()" [disabled]="loading() || otpCode().length !== 6" class="btn-primary">
+            @if (loading()) {
+              <span class="spinner"></span>
+            } @else {
+              Verify &amp; Log In
+            }
+          </button>
+
+          <div class="otp-actions">
+            <button (click)="onResendOtp()" class="text-btn" [disabled]="loading()">Resend OTP</button>
+            <span class="sep">&middot;</span>
+            <button (click)="goBack()" class="text-btn">Change Email</button>
+          </div>
+        </div>
+      }
+
+      <div class="legal">
+        <a href="#">Terms of Service</a>
+        <span class="sep">&middot;</span>
+        <a href="#">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+</div>

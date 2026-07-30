@@ -1,0 +1,311 @@
+<div class="page-container ps">
+  @if (showGuide()) {
+    <div class="modal-overlay" (click)="showGuide.set(false)">
+      <div class="settings-guide-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header settings-guide-modal__head">
+          <h2 class="modal-title">
+            <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Gmail OAuth2 Setup Guide
+          </h2>
+          <button class="btn btn-ghost btn-sm" (click)="showGuide.set(false)"><app-icon-x [size]="14" /> Close</button>
+        </div>
+
+        <div class="settings-guide-body">
+          <div class="alert alert-info">
+            This guide walks you through creating a Google Cloud OAuth2 credential so ReachOut Pro can send emails from your Gmail account securely.
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step__num">1</div>
+            <div class="guide-step__content">
+              <h3>Create a Google Cloud Project</h3>
+              <ol>
+                <li>Go to <a href="https://console.cloud.google.com" target="_blank" rel="noreferrer">Google Cloud Console</a></li>
+                <li>Click the project dropdown at top → <strong>"New Project"</strong></li>
+                <li>Name it anything (e.g., "ReachOut Pro") → Click <strong>"Create"</strong></li>
+                <li>Select the new project from the dropdown</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step__num">2</div>
+            <div class="guide-step__content">
+              <h3>Enable Gmail API</h3>
+              <ol>
+                <li>Go to <strong>APIs & Services → Library</strong></li>
+                <li>Search for <strong>"Gmail API"</strong></li>
+                <li>Click it → Click <strong>"Enable"</strong></li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step__num">3</div>
+            <div class="guide-step__content">
+              <h3>Configure OAuth Consent Screen</h3>
+              <ol>
+                <li>Go to <strong>APIs & Services → OAuth consent screen</strong></li>
+                <li>Select <strong>"External"</strong> → Click <strong>"Create"</strong></li>
+                <li>Fill in the app name and your email → Save</li>
+                <li>On "Scopes" page, click <strong>"Add or remove scopes"</strong></li>
+                <li>Search for <code>gmail.send</code> and <code>gmail.readonly</code> → Check both → Update</li>
+                <li>On "Test users" page, click <strong>"Add users"</strong></li>
+                <li>Add your Gmail address(es) that will send emails → Save</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step__num">4</div>
+            <div class="guide-step__content">
+              <h3>Create OAuth2 Credentials</h3>
+              <ol>
+                <li>Go to <strong>APIs & Services → Credentials</strong></li>
+                <li>Click <strong>"+ Create Credentials"</strong> → <strong>"OAuth client ID"</strong></li>
+                <li>Application type: <strong>"Desktop app"</strong></li>
+                <li>Name it anything → Click <strong>"Create"</strong></li>
+                <li>Click <strong>"Download JSON"</strong> button</li>
+                <li>Save the downloaded <code>credentials.json</code> file</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step__num">5</div>
+            <div class="guide-step__content">
+              <h3>Add Account in ReachOut Pro</h3>
+              <ol>
+                <li>In the Gmail section below, click <strong>"Add Gmail Account"</strong></li>
+                <li>Enter your Gmail email address</li>
+                <li>Upload the <code>credentials.json</code> you downloaded</li>
+                <li>Click <strong>"Add Account"</strong></li>
+                <li>Click <strong>"Connect"</strong> on the new account card</li>
+                <li>A popup will open — sign in with your Google account</li>
+                <li>Click <strong>"Allow"</strong> to grant permissions</li>
+                <li>Done! The popup will close automatically</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="alert alert-warning">
+            <strong>Important:</strong> Your Gmail must be added as a "Test user" in the OAuth consent screen (Step 3.7). Otherwise, Google will block the authentication.
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <header class="ps-hero">
+    <div class="ps-hero__copy">
+      <p class="ps-hero__eyebrow">Account</p>
+      <h1 class="ps-hero__title">
+        <app-icon-settings [size]="22" /> Profile & Settings
+      </h1>
+      <p class="ps-hero__sub">Configure your accounts, Gmail connections, and email preferences.</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="empty-state"><div class="spinner"></div></div>
+  } @else {
+    <div class="settings-layout">
+
+      <!-- Left column: Profile -->
+      <div class="ps-col ps-col--profile">
+        <!-- Personal Info -->
+        <section class="ps-card settings-card">
+          <div class="settings-section-header">
+            <div class="card-title">
+              <span class="ps-card__icon">
+                <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </span>
+              Your Information
+            </div>
+          </div>
+          <div class="grid-2 settings-form-grid">
+            <div class="form-group ps-float">
+              <input class="input" id="ps-name" [ngModel]="settings().applicant_name" (ngModelChange)="settings.set({ ...settings(), applicant_name: $event })" placeholder=" " title="Suraj Choudhari" />
+              <label class="form-label" for="ps-name">Full Name</label>
+            </div>
+            <div class="form-group ps-float">
+              <input class="input" id="ps-phone" [ngModel]="settings().applicant_phone" (ngModelChange)="settings.set({ ...settings(), applicant_phone: $event })" placeholder=" " title="+91 XXXXXXXXXX" />
+              <label class="form-label" for="ps-phone">Phone Number</label>
+            </div>
+            <div class="form-group ps-float">
+              <input class="input" id="ps-linkedin" [ngModel]="settings().applicant_linkedin" (ngModelChange)="settings.set({ ...settings(), applicant_linkedin: $event })" placeholder=" " title="https://linkedin.com/in/..." />
+              <label class="form-label" for="ps-linkedin">LinkedIn URL</label>
+            </div>
+            <div class="form-group ps-float">
+              <input class="input" id="ps-github" [ngModel]="settings().applicant_github" (ngModelChange)="settings.set({ ...settings(), applicant_github: $event })" placeholder=" " title="https://github.com/..." />
+              <label class="form-label" for="ps-github">GitHub URL</label>
+            </div>
+          </div>
+        </section>
+
+        <!-- Email Settings -->
+        <section class="ps-card settings-card">
+          <div class="settings-section-header">
+            <div class="card-title">
+              <span class="ps-card__icon"><app-icon-mail [size]="16" /></span>
+              Email Settings
+            </div>
+          </div>
+          <div class="settings-form-stack">
+            <div class="form-group ps-float">
+              <input class="input" id="ps-sender" [ngModel]="settings().sender_email" (ngModelChange)="settings.set({ ...settings(), sender_email: $event })" placeholder=" " />
+              <label class="form-label" for="ps-sender">Sender Email (auto-set from active Gmail account)</label>
+            </div>
+            <div class="form-group ps-float">
+              <input class="input" id="ps-test" [ngModel]="settings().test_email" (ngModelChange)="settings.set({ ...settings(), test_email: $event })" placeholder=" " />
+              <label class="form-label" for="ps-test">Test Email Address</label>
+              <div class="form-hint">Test emails are always sent here before real sends.</div>
+            </div>
+            <div class="form-group ps-float">
+              <input class="input mono" id="ps-resume" [ngModel]="settings().resume_path" (ngModelChange)="settings.set({ ...settings(), resume_path: $event })" placeholder=" " />
+              <label class="form-label" for="ps-resume">Default Resume Path</label>
+            </div>
+            <div class="form-group ps-delay">
+              <div class="ps-delay__head">
+                <label class="form-label">Delay Between Emails</label>
+                <span class="ps-delay__value">{{ delaySeconds() }}s</span>
+              </div>
+              <div class="ps-delay__track">
+                <input type="range" min="5" max="60" class="settings-range" [ngModel]="delaySeconds()"
+                  (ngModelChange)="settings.set({ ...settings(), send_delay_ms: '' + ($event * 1000) })" />
+              </div>
+              <div class="settings-range-labels">
+                <span>5s (fast, risky)</span><span>60s (slow, safe)</span>
+              </div>
+              <div class="alert alert-warning mt-2">
+                Recommended: 15–30s to avoid Gmail spam flags.
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right column: Gmail -->
+      <div class="ps-col ps-col--gmail">
+        <section class="ps-card settings-card">
+          <div class="settings-section-header">
+            <div class="card-title">
+              <span class="ps-card__icon"><app-icon-mail [size]="16" /></span>
+              Gmail Accounts
+              <button class="btn btn-ghost btn-sm settings-guide-btn" (click)="showGuide.set(true)"
+                title="How to set up Gmail OAuth2">
+                <app-icon-info [size]="13" /> Setup Guide
+              </button>
+            </div>
+            <span class="badge ps-status-pill" [ngClass]="settings().gmailConnected ? 'badge-sent' : 'badge-failed'">
+              <span class="settings-status-dot"></span>
+              {{ settings().gmailConnected ? 'Connected' : 'Disconnected' }}
+            </span>
+          </div>
+
+          @if (accounts().length > 0) {
+            <div class="settings-account-list">
+              @for (acc of accounts(); track acc.id) {
+                <div class="settings-account-item" [class.active]="acc.id === activeAccountId()">
+                  <div class="settings-account-info">
+                    <div class="settings-account-email">
+                      <span class="settings-account-avatar" aria-hidden="true">{{ acc.email.charAt(0) | uppercase }}</span>
+                      <span class="settings-account-email-text">{{ acc.email }}</span>
+                      @if (acc.id === activeAccountId()) {
+                        <span class="badge badge-sent badge-xs"><app-icon-check [size]="11" /> ACTIVE</span>
+                      }
+                      @if (acc.isConnected) {
+                        <span class="badge badge-contacted badge-xs"><span class="settings-status-dot"></span> CONNECTED</span>
+                      } @else {
+                        <span class="badge badge-pending badge-xs"><app-icon-alert [size]="11" /> DISCONNECTED</span>
+                      }
+                    </div>
+                    @if (acc.label && acc.label !== acc.email) {
+                      <div class="settings-account-label">{{ acc.label }}</div>
+                    }
+                  </div>
+                  <div class="settings-account-actions">
+                    @if (acc.id !== activeAccountId() && acc.isConnected) {
+                      <button class="btn btn-ghost btn-sm" (click)="handleActivate(acc.id)">
+                        <app-icon-zap [size]="13" /> Set Active
+                      </button>
+                    }
+                    @if (!acc.isConnected) {
+                      <button class="btn btn-primary btn-sm" (click)="handleConnectAccount(acc.id)">
+                        <app-icon-link [size]="13" /> Connect
+                      </button>
+                    }
+                    @if (acc.isConnected) {
+                      <button class="btn btn-warning btn-sm" (click)="handleDisconnectAccount(acc.id, acc.email)">
+                        <app-icon-disconnect [size]="13" /> Disconnect
+                      </button>
+                    }
+                    <button class="btn btn-danger btn-sm btn-icon" (click)="handleRemoveAccount(acc.id, acc.email)" title="Remove account">
+                      <app-icon-trash [size]="13" />
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          @if (showAddForm()) {
+            <div class="settings-add-form">
+              <div class="settings-add-form-title">
+                <app-icon-plus [size]="15" /> Add New Gmail Account
+              </div>
+              <div class="settings-add-form-grid">
+                <div class="form-group ps-float">
+                  <input class="input" id="ps-new-email" [ngModel]="newEmail()" (ngModelChange)="newEmail.set($event)" placeholder=" " title="yourname@gmail.com" />
+                  <label class="form-label" for="ps-new-email">Email Address *</label>
+                </div>
+                <div class="form-group ps-float">
+                  <input class="input" id="ps-new-label" [ngModel]="newLabel()" (ngModelChange)="newLabel.set($event)" placeholder=" " title="Work account" />
+                  <label class="form-label" for="ps-new-label">Label (optional)</label>
+                </div>
+              </div>
+              <div class="form-group settings-cred-group">
+                <label class="form-label">credentials.json *</label>
+                <div class="flex-center-gap">
+                  <button class="btn btn-ghost btn-sm" (click)="newCredRef.click()">
+                    <app-icon-download [size]="13" /> {{ newCredFile() ? newCredFile()!.name : 'Upload credentials.json' }}
+                  </button>
+                  <input #newCredRef type="file" accept=".json" class="hidden-input"
+                    (change)="handleFileSelect($event)" />
+                </div>
+              </div>
+              <div class="action-row">
+                <button class="btn btn-primary" (click)="handleAddAccount()" [disabled]="addingAccount()">
+                  @if (addingAccount()) {
+                    Adding...
+                  } @else {
+                    <app-icon-plus [size]="14" /> Add Account
+                  }
+                </button>
+                <button class="btn btn-ghost" (click)="showAddForm.set(false)">Cancel</button>
+              </div>
+            </div>
+          } @else {
+            <div class="settings-add-section">
+              <button class="btn btn-primary" (click)="showAddForm.set(true)">
+                Add Gmail Account
+              </button>
+            </div>
+          }
+        </section>
+
+      </div>
+    </div>
+
+    <div class="ps-save-bar">
+      <button class="btn btn-primary btn-lg ps-save" (click)="handleSave()" [disabled]="saving()">
+        @if (saving()) {
+          Saving...
+        } @else {
+          <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save Settings
+        }
+      </button>
+    </div>
+  }
+</div>

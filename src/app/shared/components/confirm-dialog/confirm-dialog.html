@@ -1,0 +1,14 @@
+@if (isOpen) {
+  <div class="modal-overlay" (click)="cancel.emit()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">{{ title }}</div>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.875rem;">{{ message }}</p>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="cancel.emit()">Cancel</button>
+        <button class="btn" [class.btn-danger]="variant === 'danger'" [class.btn-primary]="variant === 'primary'" [class.btn-warning]="variant === 'warning'" [class.btn-success]="variant === 'success'" (click)="confirm.emit()">{{ confirmText }}</button>
+      </div>
+    </div>
+  </div>
+}

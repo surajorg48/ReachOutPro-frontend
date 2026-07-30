@@ -1,0 +1,346 @@
+<div class="page-container scraper">
+    @if (pickerTarget()) {
+        <div class="email-picker-overlay" (click)="pickerTarget.set(null)">
+            <div class="email-picker-modal" (click)="$event.stopPropagation()">
+                <div class="modal-header">
+                    <div class="modal-title">Select Best Email</div>
+                    <button class="btn btn-ghost btn-sm btn-icon" (click)="pickerTarget.set(null)" aria-label="Close">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
+                <div class="email-picker-subtitle">
+                    {{ pickerTarget().companyName }} — click to set as best email
+                </div>
+                <div class="email-picker-list">
+                    @for (e of pickerTarget().emails; track e.email; let i = $index) {
+                        <div class="email-picker-item"
+                            [class.selected]="(pickerTarget().selectedBestEmail || pickerTarget().emails[0]?.email) === e.email"
+                            (click)="updateBestEmail(e)">
+                            <span class="email-picker-address">{{ e.email }}</span>
+                            <span class="badge badge-neutral">score: {{ e.score }}</span>
+                            @if (i === 0 && !pickerTarget().selectedBestEmail) {
+                                <span class="badge badge-sent">default</span>
+                            }
+                            @if (pickerTarget().selectedBestEmail === e.email) {
+                                <span class="badge badge-contacted">selected</span>
+                            }
+                        </div>
+                    }
+                </div>
+                <button class="btn btn-ghost btn-full" (click)="pickerTarget.set(null)">Close</button>
+            </div>
+        </div>
+    }
+
+    @if (detailTarget()) {
+        <div class="email-picker-overlay" (click)="closeResultDetail()">
+            <div class="email-picker-modal scraper-detail-modal" (click)="$event.stopPropagation()">
+                <div class="modal-header">
+                    <div class="modal-title">Scrape Result</div>
+                    <button class="btn btn-ghost btn-sm btn-icon" (click)="closeResultDetail()" aria-label="Close">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
+
+                <div class="detail-status" [class.success]="detailTarget().status === 'done'" [class.failed]="detailTarget().status === 'error'">
+                    {{ resultStatusLabel(detailTarget()) }}
+                </div>
+
+                <div class="detail-grid">
+                    <div class="detail-row">
+                        <span class="detail-label">Website</span>
+                        <span class="detail-value mono-text">{{ detailTarget().url }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Company</span>
+                        <span class="detail-value">{{ detailTarget().companyName || '—' }}</span>
+                    </div>
+                    @if (detailTarget().status === 'error') {
+                        <div class="detail-row">
+                            <span class="detail-label">Error reason</span>
+                            <span class="detail-value text-danger">{{ resultErrorReason(detailTarget()) }}</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="detail-summary">
+                    <div class="summary-title">Processing summary</div>
+                    <div class="summary-stats">
+                        <div class="summary-stat">
+                            <span class="summary-stat__value">{{ detailTarget().status === 'done' || detailTarget().status === 'error' ? 1 : 0 }}</span>
+                            <span class="summary-stat__label">Total processed</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat__value">{{ getEmailCount(detailTarget()) }}</span>
+                            <span class="summary-stat__label">Emails found</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat__value">{{ detailTarget().phones?.length || 0 }}</span>
+                            <span class="summary-stat__label">Phones found</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-full" (click)="closeResultDetail()">Close</button>
+            </div>
+        </div>
+    }
+
+    <header class="scraper-header">
+        <div class="scraper-header__copy">
+            <p class="scraper-eyebrow">Contact enrichment</p>
+            <h1 class="page-header-title">
+                <app-icon-scraper [size]="22" /> Web Scraper
+            </h1>
+            <p>Discover HR emails &amp; phones from company websites — parallel scraping with real-time results</p>
+        </div>
+    </header>
+
+    @if (!session() || isDone()) {
+        <div class="grid-2 scraper-input-grid">
+            <div class="card scraper-panel">
+                <div class="card-header">
+                    <div class="card-title scraper-panel__title">Enter Company Websites</div>
+                    <button class="btn btn-ghost btn-sm scraper-pill" (click)="fileRef.click()">
+                        <app-icon-upload [size]="13" /> Import Excel/CSV
+                    </button>
+                    <input #fileRef type="file" accept=".xlsx,.xls,.csv" class="hidden-input" (change)="handleFileImport($event)" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Website URLs (one per line)</label>
+                    <textarea class="textarea mono-textarea"
+                        [ngModel]="urls()" (ngModelChange)="urls.set($event)"
+                        placeholder="https://company1.com&#10;https://company2.com&#10;company3.com"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Parallel Workers: <span class="text-primary">{{ concurrency() }}</span></label>
+                    <div class="concurrency-options">
+                        @for (n of concurrencyOptions; track n) {
+                            <button class="concurrency-btn"
+                                [class.active]="concurrency() === n"
+                                (click)="concurrency.set(n)">
+                                {{ n }}
+                            </button>
+                        }
+                    </div>
+                    <div class="form-hint">
+                        Higher = faster but may trigger rate limits. Recommended: 2–4.
+                    </div>
+                </div>
+
+                <div class="alert alert-info scraper-hint">
+                    Scraper visits /contact, /careers, /about and uses Puppeteer for JS-heavy sites.
+                </div>
+
+                <button class="btn btn-primary btn-lg btn-full scraper-start" (click)="handleStart()">
+                    <app-icon-send [size]="16" /> Start Scraping
+                    @if (urls().split('\n').length > 0 && urls().trim()) {
+                        ({{ urls().split('\n').length }} sites)
+                    }
+                </button>
+            </div>
+
+            <div class="card scraper-panel">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Quick Load — Top IT Companies
+                    </div>
+                </div>
+                <p class="text-secondary mb-3">Click to add individual companies or load all at once</p>
+                <div class="quick-tags">
+                    @for (u of predefinedUrls; track u) {
+                        <button class="quick-tag"
+                            (click)="urls.update(prev => (prev ? prev + '\n' : '') + u)">
+                            + {{ u.replace('https://www.', '').replace('.com', '') }}
+                        </button>
+                    }
+                </div>
+                <div class="divider"></div>
+                <button class="btn btn-ghost btn-full mb-3 scraper-pill" (click)="urls.set(predefinedUrls.join('\n'))">
+                    Load All ({{ predefinedUrls.length }} companies)
+                </button>
+                <div class="alert alert-warning scraper-hint">
+                    Scraping is subject to each site's robots.txt. Random delays are added between requests.
+                </div>
+
+                @if (isDone() && session()?.results?.length > 0) {
+                    <div class="mt-3">
+                        <div class="divider"></div>
+                        <p class="text-secondary mb-2">Last session results:</p>
+                        <div class="action-row">
+                            <button class="btn btn-ghost btn-full scraper-pill" (click)="exportExcel()">
+                                <app-icon-download [size]="14" /> Export Excel
+                            </button>
+                            <button class="btn btn-ghost btn-full scraper-pill" (click)="handleNewScrape()">
+                                <app-icon-refresh [size]="14" /> New Scrape
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    @if (session() && !isDone()) {
+        <div class="card scraper-panel scraper-status-bar">
+            <div class="card-header">
+                <div class="scraper-status-info">
+                    @if (isRunning()) {
+                        <span class="spinner"></span>
+                    }
+                    @if (isPaused()) {
+                        <svg class="icon-inline scraper-pause-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="4" x2="6" y2="20"/><line x1="18" y1="4" x2="18" y2="20"/></svg>
+                    }
+                    <div>
+                        <div class="card-title">
+                            {{ isRunning() ? 'Scraping in Progress' : isPaused() ? 'Scraping Paused' : 'Scraping' }}
+                        </div>
+                        <div class="text-tertiary text-xs scraper-meta">
+                            {{ session().done }} / {{ session().total }} done
+                            @if (remainingSeconds() && remainingSeconds()! > 0) {
+                                 · ~{{ formatTime(remainingSeconds()) }} remaining
+                            }
+                            · {{ concurrency() }} parallel workers
+                        </div>
+                    </div>
+                </div>
+                <div class="action-row">
+                    @if (isRunning()) {
+                        <button class="btn btn-ghost btn-sm scraper-pill" (click)="handlePause()">
+                            <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="4" x2="6" y2="20"/><line x1="18" y1="4" x2="18" y2="20"/></svg> Pause
+                        </button>
+                    }
+                    @if (isPaused()) {
+                        <button class="btn btn-primary btn-sm scraper-pill" (click)="handleResume()">
+                            <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Resume
+                        </button>
+                    }
+                    <button class="btn btn-danger btn-sm scraper-pill" (click)="handleStop()">
+                        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg> Stop
+                    </button>
+                    <button class="btn btn-ghost btn-sm scraper-pill" (click)="exportExcel()" [disabled]="!session().results?.length">
+                        <app-icon-download [size]="14" /> Export
+                    </button>
+                </div>
+            </div>
+
+            <div class="scraper-progress">
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" [style.width.%]="pct()"></div>
+                </div>
+                <div class="scraper-progress-labels">
+                    <span>{{ pct() }}% complete</span>
+                    <span class="scraper-progress-count">{{ session().done }} of {{ session().total }}</span>
+                </div>
+            </div>
+
+            @if (activeScraping().length > 0) {
+                <div class="scraper-workers">
+                    @for (url of activeScraping(); track url) {
+                        <span class="scraper-worker-tag">
+                            <span class="spinner spinner-xs"></span>
+                            {{ getDomain(url) }}
+                        </span>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+    @if (session()?.results?.length > 0) {
+        <div class="card scraper-panel scraper-results">
+            <div class="card-header">
+                <div class="card-title">
+                    Results — {{ session().results.length }} processed
+                    @if (isDone()) {
+                        <span class="text-tertiary text-sm text-normal">
+                            · session {{ session().status === 'stopped' ? '(stopped)' : '(complete)' }}
+                        </span>
+                    }
+                </div>
+                <div class="action-row">
+                    @if (sessionId()) {
+                        <button class="btn btn-ghost btn-sm scraper-pill" (click)="exportExcel()">
+                            <app-icon-download [size]="13" /> Export Excel
+                        </button>
+                    }
+                    @if (isDone()) {
+                        <button class="btn btn-ghost btn-sm scraper-pill" (click)="handleNewScrape()"><app-icon-refresh [size]="13" /> New Scrape</button>
+                    }
+                </div>
+            </div>
+            <div class="table-wrapper scraper-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Company / URL</th>
+                            <th>Best Email</th>
+                            <th>Phone</th>
+                            <th>Emails Found</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (r of session().results; track $index) {
+                            <tr class="scraper-result-row" (click)="openResultDetail(r)">
+                                <td>
+                                    <div class="result-company">{{ r.companyName || r.url }}</div>
+                                    <div class="result-url">{{ r.url }}</div>
+                                </td>
+                                <td class="mono-text">
+                                    @if (getBestEmail(r)) {
+                                        <span class="text-primary">{{ getBestEmail(r) }}</span>
+                                    } @else if (r.error) {
+                                        <span class="text-danger text-xs">{{ resultErrorReason(r) }}</span>
+                                    } @else {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td class="mono-text text-sm">
+                                    @if (r.phones?.[0]) {
+                                        {{ r.phones[0] }}
+                                    } @else {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td>
+                                    <button [disabled]="getEmailCount(r) === 0"
+                                        (click)="$event.stopPropagation(); getEmailCount(r) > 0 && pickerTarget.set(r)"
+                                        class="email-count-btn"
+                                        [class.has-emails]="getEmailCount(r) > 0"
+                                        [class.multiple-emails]="getEmailCount(r) > 1"
+                                        [class.no-emails]="getEmailCount(r) === 0"
+                                        [title]="getEmailCount(r) > 1 ? 'Click to pick best email' : ''">
+                                        @if (getEmailCount(r) > 0) {
+                                            {{ getEmailCount(r) }} email{{ getEmailCount(r) > 1 ? 's' : '' }} found{{ getEmailCount(r) > 1 ? ' ▾' : '' }}
+                                        } @else {
+                                            —
+                                        }
+                                    </button>
+                                </td>
+                                <td>
+                                    @if (r.status === 'done') {
+                                        <span class="badge" [ngClass]="getEmailCount(r) > 0 ? 'badge-sent' : 'badge-contacted'">
+                                            {{ getEmailCount(r) > 0 ? 'Found' : 'None' }}
+                                        </span>
+                                    } @else if (r.status === 'error') {
+                                        <span class="badge badge-failed">Error</span>
+                                    } @else if (r.status === 'cancelled') {
+                                        <span class="badge badge-not_interested">Stopped</span>
+                                    } @else {
+                                        <span class="badge badge-not_interested">Pending</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-secondary text-sm mt-3 flex-center-gap scraper-footer-note">
+                <app-icon-check [size]="13" class="text-success" /> All discovered emails &amp; phones are saved to the Companies database automatically.
+            </p>
+        </div>
+    }
+</div>

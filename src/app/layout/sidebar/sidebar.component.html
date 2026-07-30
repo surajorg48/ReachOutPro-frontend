@@ -1,0 +1,137 @@
+<aside class="sidebar" [class.collapsed]="collapsed()">
+  <div class="sidebar-inner">
+    <div class="sidebar-header">
+      <div class="logo" [class.logo-collapsed]="collapsed()">
+        <div class="logo-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        @if (!collapsed()) {
+          <div class="logo-text">
+            <span class="logo-title">ReachOut</span>
+            <span class="logo-subtitle">Pro</span>
+          </div>
+        }
+      </div>
+      <button class="collapse-btn" (click)="collapsed.set(!collapsed())" [attr.title]="collapsed() ? 'Expand' : 'Collapse'" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          @if (collapsed()) {
+            <polyline points="9 18 15 12 9 6"/>
+          } @else {
+            <polyline points="15 18 9 12 15 6"/>
+          }
+        </svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        @if (!collapsed()) {
+          <div class="nav-section-title">Main</div>
+        }
+        <a class="nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" [attr.title]="collapsed() ? 'Dashboard' : null">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+          </span>
+          @if (!collapsed()) { <span class="nav-label">Dashboard</span> }
+          <span class="nav-indicator"></span>
+        </a>
+
+        <a class="nav-item" routerLink="/companies" routerLinkActive="active" [attr.title]="collapsed() ? 'Companies' : null">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+          </span>
+          @if (!collapsed()) { <span class="nav-label">Companies</span> }
+          <span class="nav-indicator"></span>
+        </a>
+
+        <a class="nav-item" routerLink="/discover" routerLinkActive="active" [attr.title]="collapsed() ? 'Discover' : null">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </span>
+          @if (!collapsed()) { <span class="nav-label">Discover</span> }
+          <span class="nav-indicator"></span>
+        </a>
+
+        <a class="nav-item" routerLink="/scraper" routerLinkActive="active" [attr.title]="collapsed() ? 'Scraper' : null">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.8 4.8 2.8 2.8"/><path d="M2 12h4"/><path d="m4.8 17.2 2.8-2.8"/><path d="M12 18v4"/><path d="m17.2 19.2-2.8-2.8"/><path d="M18 12h4"/><path d="m19.2 6.8-2.8 2.8"/><circle cx="12" cy="12" r="3"/></svg>
+          </span>
+          @if (!collapsed()) { <span class="nav-label">Scraper</span> }
+          <span class="nav-indicator"></span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        @if (!collapsed()) {
+          <div class="nav-section-title">Outreach</div>
+        }
+        <a class="nav-item" routerLink="/campaigns" routerLinkActive="active" [attr.title]="collapsed() ? 'Campaigns' : null">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9z"/></svg>
+          </span>
+          @if (!collapsed()) { <span class="nav-label">Campaigns</span> }
+          <span class="nav-indicator"></span>
+        </a>
+
+        <a class="nav-item" routerLink="/email-log" routerLinkActive="active" [attr.title]="collapsed() ? 'Email Logs' : null">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </span>
+          @if (!collapsed()) { <span class="nav-label">Email Logs</span> }
+          <span class="nav-indicator"></span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        @if (!collapsed()) {
+          <div class="nav-section-title">Tools</div>
+        }
+        <a class="nav-item" routerLink="/resume" routerLinkActive="active" [attr.title]="collapsed() ? 'Resume Analyzer' : null">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          </span>
+          @if (!collapsed()) { <span class="nav-label">Resume Analyzer</span> }
+          <span class="nav-indicator"></span>
+        </a>
+
+        <a class="nav-item" routerLink="/settings" routerLinkActive="active" [attr.title]="collapsed() ? 'Settings' : null">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          </span>
+          @if (!collapsed()) { <span class="nav-label">Settings</span> }
+          <span class="nav-indicator"></span>
+        </a>
+
+        <a class="nav-item" routerLink="/subscription" routerLinkActive="active" [attr.title]="collapsed() ? 'Subscription' : null">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </span>
+          @if (!collapsed()) { <span class="nav-label">Subscription</span> }
+          <span class="nav-indicator"></span>
+        </a>
+
+        @if (isAdmin()) {
+          <a class="nav-item" routerLink="/admin/plans" routerLinkActive="active" [attr.title]="collapsed() ? 'Admin Plans' : null">
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4 2 7L12 17l-6.5 3 2-7L2 9h7z"/></svg>
+            </span>
+            @if (!collapsed()) { <span class="nav-label">Admin Plans</span> }
+            <span class="nav-indicator"></span>
+          </a>
+        }
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="gmail-status" [class.collapsed]="collapsed()">
+        <span class="status-dot" [class.connected]="gmailConnected()" [class.disconnected]="!gmailConnected()"></span>
+        @if (!collapsed()) {
+          <span class="status-text">{{ gmailConnected() ? 'Gmail Connected' : 'Gmail Disconnected' }}</span>
+        }
+      </div>
+    </div>
+  </div>
+</aside>

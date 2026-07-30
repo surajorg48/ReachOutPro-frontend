@@ -1,0 +1,256 @@
+<div class="page-container discover">
+    <header class="discover-header">
+        <div class="discover-header__copy">
+            <p class="discover-eyebrow">Company discovery</p>
+            <h1 class="page-header-title">
+                <app-icon-globe [size]="24" /> Discover
+            </h1>
+            <p>Find companies from Google Maps by industry keyword and location</p>
+        </div>
+    </header>
+
+    <!-- Sub-tabs -->
+    <div class="tabs discover-tabs">
+        <div class="tab tab--with-icon" [class.active]="discoverTab() === 'search'" (click)="discoverTab.set('search')">
+            <app-icon-search [size]="14" /> Search
+        </div>
+        <div class="tab tab--with-icon" [class.active]="discoverTab() === 'history'" (click)="discoverTab.set('history'); loadHistory()">
+            <svg class="tab-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> History ({{ history().length }})
+        </div>
+    </div>
+
+    @if (discoverTab() === 'history') {
+        <!-- History Tab -->
+        <div class="card discover-panel">
+            <div class="card-header">
+                <div class="card-title card-title--with-icon">
+                    <svg class="card-title-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> Discovery History
+                </div>
+                @if (history().length > 0) {
+                    <button class="btn btn-danger btn-sm discover-pill" (click)="handleClearHistory()">
+                        <app-icon-trash [size]="13" /> Clear All
+                    </button>
+                }
+            </div>
+            @if (loadingHistory()) {
+                <div class="empty-state"><div class="spinner"></div></div>
+            } @else if (history().length === 0) {
+                <div class="empty-state empty-state--compact">
+                    <div class="empty-icon-wrap">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path>
+                        </svg>
+                    </div>
+                    <div>No discovery history yet. Run a search first!</div>
+                </div>
+            } @else {
+                <div class="table-wrapper discover-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Query</th><th>Results</th><th>Date</th><th class="th-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (h of history(); track h.id) {
+                                <tr>
+                                    <td class="bold cell-query">{{ h.query }}</td>
+                                    <td><span class="badge badge-sent">{{ h.result_count }} companies</span></td>
+                                    <td class="cell-date">
+                                        {{ h.created_at | date:'short' }}
+                                    </td>
+                                    <td>
+                                        <div class="action-cell">
+                                            <button class="btn btn-primary btn-sm discover-pill" (click)="handleLoadHistory(h)"><app-icon-download [size]="13" /> Load</button>
+                                            <button class="btn btn-danger btn-sm btn-icon" (click)="handleDeleteHistory(h.id)"><app-icon-trash [size]="14" /></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    } @else {
+        <!-- Search Tab -->
+        <div class="card discover-panel">
+            <div class="card-header">
+                <div class="card-title card-title--with-icon"><app-icon-globe [size]="16" /> Discover Companies from Google Maps</div>
+            </div>
+
+            <!-- Keywords -->
+            <div class="form-group form-group--mb">
+                <label class="form-label form-label--with-icon"><app-icon-tag [size]="13" /> Industry Keywords *</label>
+                <div class="keyword-input-wrap">
+                    @for (kw of keywords(); track kw; let i = $index) {
+                        <span class="keyword-tag">
+                            {{ kw }}
+                            <span class="keyword-tag__remove" (click)="removeKw(i)">&#x2715;</span>
+                        </span>
+                    }
+                    <input [ngModel]="kwInput()" (ngModelChange)="kwInput.set($event)" (keydown)="handleKwKey($event)"
+                        [placeholder]="keywords().length ? 'Add more...' : 'Type keyword and press Enter (e.g. IT companies)'"
+                        [disabled]="searching()"
+                        class="keyword-input" />
+                </div>
+            </div>
+            <div class="suggestion-row">
+                @for (s of filteredSuggestions(); track s) {
+                    <button class="btn btn-ghost btn-sm suggestion-btn"
+                        (click)="addKw(s)" [disabled]="searching()">+ {{ s }}</button>
+                }
+            </div>
+
+            <!-- Location Text Input -->
+            <div class="form-group form-group--mb-sm">
+                <label class="form-label form-label--with-icon">
+                    <app-icon-map-pin [size]="13" /> Location <span class="form-label-hint">(type directly or use dropdowns below)</span>
+                </label>
+                <input class="input input--lg" [ngModel]="locationText()" (ngModelChange)="locationText.set($event)"
+                    placeholder="e.g. Pune, Maharashtra, India  —  or just type Pune"
+                    [disabled]="searching()" />
+                <div class="form-hint">
+                    Leave empty to search globally. Type any location or use the dropdowns to fill this field.
+                </div>
+            </div>
+
+            <!-- Toggle Dropdowns -->
+            <button class="btn btn-ghost btn-sm dropdown-toggle discover-pill" [disabled]="searching()"
+                (click)="showDropdowns.set(!showDropdowns())">
+                {{ showDropdowns() ? '&#x25B2; Hide location picker' : '&#x25BC; Pick from Country / State / City dropdowns' }}
+            </button>
+
+            <!-- Dropdowns -->
+            @if (showDropdowns()) {
+                <div class="location-dropdowns">
+                    <div class="form-group location-card">
+                        <label class="form-label form-label--with-icon"><app-icon-globe [size]="13" /> Country</label>
+                        <select class="select" [ngModel]="country()" (ngModelChange)="onCountryChange($event)" [disabled]="searching()">
+                            <option value="">Select country</option>
+                            @for (c of countries(); track c) { <option [value]="c">{{ c }}</option> }
+                        </select>
+                    </div>
+                    <div class="form-group location-card">
+                        <label class="form-label form-label--with-icon">
+                            <app-icon-map-pin [size]="13" /> State @if (loadingStates()) { <span class="spinner spinner--xs"></span> }
+                        </label>
+                        <select class="select" [ngModel]="stateName()" (ngModelChange)="onStateChange($event)" [disabled]="!statesList().length || searching()">
+                            <option value="">All states</option>
+                            @for (s of statesList(); track s) { <option [value]="s">{{ s }}</option> }
+                        </select>
+                    </div>
+                    <div class="form-group location-card">
+                        <label class="form-label form-label--with-icon">
+                            <app-icon-city [size]="13" /> City @if (loadingCities()) { <span class="spinner spinner--xs"></span> }
+                        </label>
+                        <select class="select" [ngModel]="cityName()" (ngModelChange)="onCityChange($event)" [disabled]="!citiesList().length || searching()">
+                            <option value="">All cities</option>
+                            @for (c of citiesList(); track c) { <option [value]="c">{{ c }}</option> }
+                        </select>
+                    </div>
+                </div>
+            }
+
+            <!-- Max Results -->
+            <div class="form-group form-group--mb">
+                <label class="form-label">Max Results: <strong class="max-results-value">{{ maxResults() }}</strong></label>
+                <input type="range" min="10" max="100" step="10" [ngModel]="maxResults()"
+                    (ngModelChange)="maxResults.set($event)" [disabled]="searching()"
+                    class="range-input" />
+            </div>
+
+            <!-- Progress -->
+            @if (searching()) {
+                <div class="alert alert-info discover-progress">
+                    <span class="spinner spinner--sm"></span>
+                    <span>{{ progressMsg() || 'Searching...' }}</span>
+                </div>
+            }
+
+            <!-- Search Button -->
+            <div class="discover-actions">
+                <button class="btn btn-primary btn-lg discover-btn"
+                    (click)="handleDiscover()"
+                    [disabled]="!canDiscover()"
+                    [class.is-ready]="canDiscover()">
+                    @if (searching()) {
+                        <span class="spinner spinner--sm"></span> Discovering...
+                    } @else {
+                        <app-icon-search [size]="16" /> Discover Companies{{ locationText() ? ' in ' + locationText() : '' }}
+                    }
+                </button>
+                @if (searching()) {
+                    <button class="btn btn-danger discover-pill" (click)="handleStop()">
+                        <svg class="btn-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg> Stop
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Results Table -->
+        @if (results().length > 0) {
+            <div class="card discover-panel discover-results">
+                <div class="card-header">
+                    <div class="card-title card-title--with-icon">
+                        <svg class="card-title-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg> 
+                        Found {{ results().length }} Companies
+                        @if (status() === 'complete') {
+                            <app-icon-check [size]="14" class="status-complete-icon" />
+                        }
+                        @if (searching()) {
+                            <span class="live-indicator">
+                                <svg class="animate-pulse" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Live...
+                            </span>
+                        }
+                    </div>
+                    <div class="results-actions">
+                        <button class="btn btn-ghost btn-sm discover-pill" (click)="toggleAll()">
+                            {{ selected().size === results().length ? '&#9744; Deselect' : '&#9745; Select All' }}
+                        </button>
+                        <button class="btn btn-success btn-sm discover-pill" (click)="handleSaveToDb()" [disabled]="!selected().size">
+                            <app-icon-save [size]="13" /> Save to DB ({{ selected().size }})
+                        </button>
+                        <button class="btn btn-primary btn-sm discover-pill" (click)="handleScrape()" [disabled]="!selected().size || searching()">
+                            <app-icon-send [size]="13" /> Scrape Emails
+                        </button>
+                    </div>
+                </div>
+                <div class="table-wrapper discover-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="th-checkbox">&#9745;</th><th>Company</th><th>Website</th><th>Phone</th><th>Address</th><th>Source</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (r of results(); track $index) {
+                                <tr class="result-row" (click)="toggle($index)">
+                                    <td class="td-checkbox"><input type="checkbox" [checked]="selected().has($index)" (change)="toggle($index)" (click)="$event.stopPropagation()" /></td>
+                                    <td>
+                                        <div class="bold">{{ r.name }}</div>
+                                        @if (r.category) { <div class="result-category">{{ r.category }}</div> }
+                                        @if (r.rating) { <div class="result-rating">Rating: {{ r.rating }}</div> }
+                                    </td>
+                                    <td class="mono cell-website">
+                                        @if (r.website) {
+                                            <a [href]="r.website" target="_blank" rel="noreferrer" (click)="$event.stopPropagation()" class="website-link">{{ r.domain || r.website.replace('https://', '').replace('http://', '') }}</a>
+                                        } @else {
+                                            <span class="text-muted text-sm">&mdash;</span>
+                                        }
+                                    </td>
+                                    <td class="mono cell-phone">{{ r.phone || '&mdash;' }}</td>
+                                    <td class="cell-address">{{ r.address || '&mdash;' }}</td>
+                                    <td><span class="badge badge-sm" [ngClass]="r.source?.includes('Maps') ? 'badge-sent' : 'badge-contacted'">{{ r.source || 'Web' }}</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="alert alert-info results-hint">
+                    <strong>Save to DB</strong> adds to your outreach list. <strong>Scrape Emails</strong> visits websites to find HR contacts.
+                </div>
+            </div>
+        }
+    }
+</div>

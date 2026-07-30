@@ -1,0 +1,102 @@
+<div class="page-container campaigns-page">
+    <header class="page-header campaigns-header">
+        <div class="campaigns-header__copy">
+            <h1 class="campaigns-title">
+                <span class="campaigns-title__icon" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                </span>
+                Campaigns
+            </h1>
+            <p>Create and manage email campaigns. Each campaign uses a template and sends with your resume attached.</p>
+        </div>
+        <div class="campaigns-toolbar">
+            <button class="btn btn-primary" (click)="navigate('/campaigns/new')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 5v14"/><path d="M5 12h14"/>
+                </svg>
+                New Campaign
+            </button>
+        </div>
+    </header>
+
+    @if (loading()) {
+        <div class="empty-state campaigns-loading"><div class="spinner"></div></div>
+    } @else if (campaigns().length === 0) {
+        <div class="empty-state campaigns-empty card">
+            <span class="empty-icon" aria-hidden="true">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                </svg>
+            </span>
+            <h3>No campaigns yet</h3>
+            <p>Create your first campaign to start sending job applications.</p>
+            <button class="btn btn-primary" (click)="navigate('/campaigns/new')">Create Campaign</button>
+        </div>
+    } @else {
+        <div class="campaigns-list">
+            @for (c of campaigns(); track c.id) {
+                <div class="card campaign-card">
+                    <div class="campaign-card-body">
+                        <div class="campaign-card-content">
+                            <div class="campaign-card-header">
+                                <div class="campaign-card-identity">
+                                    <div class="campaign-card-avatar" aria-hidden="true">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+                                        </svg>
+                                    </div>
+                                    <div class="campaign-card-heading">
+                                        <h3 class="campaign-card-title">{{ c.name }}</h3>
+                                        <span class="badge" [ngClass]="'badge-' + c.status">{{ c.status }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="campaign-card-meta">
+                                <span class="campaign-meta-chip">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                                    </svg>
+                                    Subject: <span class="meta-value">{{ c.subject }}</span>
+                                </span>
+                                <span class="campaign-meta-chip">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>
+                                    </svg>
+                                    Position: <span class="meta-value">{{ c.position }}</span>
+                                </span>
+                                <span class="campaign-meta-chip campaign-meta-chip--muted">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                                    </svg>
+                                    {{ c.created_at | date:'MMM d, yyyy' }}
+                                </span>
+                            </div>
+
+                            <div class="campaign-stats">
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-value stat-sent">{{ c.stats?.sent || 0 }}</div>
+                                    <div class="campaign-stat-label">Sent</div>
+                                </div>
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-value stat-pending">{{ c.stats?.pending || 0 }}</div>
+                                    <div class="campaign-stat-label">Pending</div>
+                                </div>
+                                <div class="campaign-stat">
+                                    <div class="campaign-stat-value stat-failed">{{ c.stats?.failed || 0 }}</div>
+                                    <div class="campaign-stat-label">Failed</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="campaign-card-actions">
+                            <button class="btn btn-primary btn-sm" (click)="navigate('/campaigns/' + c.id + '/edit')">Edit / Send</button>
+                            <button class="btn btn-danger btn-sm" (click)="handleDelete(c.id)">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

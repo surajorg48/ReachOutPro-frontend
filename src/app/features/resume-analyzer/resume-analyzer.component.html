@@ -1,0 +1,338 @@
+<div class="page-container ra">
+  <header class="ra-hero">
+    <div class="ra-hero__copy">
+      <p class="ra-hero__eyebrow">AI Workspace</p>
+      <h1 class="ra-hero__title">
+        <app-icon-resume [size]="22" /> Resume Analyzer
+      </h1>
+      <p class="ra-hero__sub">Upload your resume — AI will extract your details and generate a personalized email template</p>
+    </div>
+  </header>
+
+  <!-- Upload Section -->
+  <section class="ra-card ra-upload mb-4">
+    <div class="ra-card__head">
+      <div class="ra-card__title">
+        <span class="ra-card__icon"><app-icon-upload [size]="15" /></span>
+        Upload Resume
+      </div>
+      <span class="text-muted text-xs">Supports PDF, DOC, DOCX, JPG, PNG, WebP (max 10MB)</span>
+    </div>
+
+    <div class="drop-zone"
+      [class.dragging]="dragging()"
+      [class.has-file]="!!file()"
+      (click)="fileRef.click()"
+      (dragover)="$event.preventDefault(); dragging.set(true)"
+      (dragleave)="dragging.set(false)"
+      (drop)="handleFileDrop($event)">
+
+      <input #fileRef type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp" class="hidden-input"
+        (change)="handleFileSelect($any($event.target).files[0])" />
+
+      @if (file()) {
+        <div class="drop-zone__content">
+          <div class="drop-zone-icon text-success"><app-icon-check [size]="32" /></div>
+          <div class="drop-zone-text">{{ file()!.name }}</div>
+          <div class="drop-zone-hint">
+            {{ (file()!.size / 1024).toFixed(1) }} KB • {{ file()!.type.includes('pdf') ? 'PDF' : 'Image' }}
+          </div>
+          <div class="text-primary text-xs mt-2">Click to change file</div>
+        </div>
+      } @else {
+        <div class="drop-zone__content">
+          <div class="drop-zone-icon"><app-icon-upload [size]="36" /></div>
+          <div class="drop-zone-text">Drop your resume here or click to browse</div>
+          <div class="drop-zone-hint">PDF, DOC, DOCX, JPG, PNG, WebP supported</div>
+        </div>
+      }
+    </div>
+
+    <div class="grid-2 resume-upload-grid">
+      <div class="form-group ra-field">
+        <label class="form-label">Target Position (enhances template)</label>
+        <input class="input" [ngModel]="position()" (ngModelChange)="position.set($event)"
+          placeholder="Software Developer, React Developer, Full Stack..." />
+      </div>
+      <div class="resume-parse-wrap">
+        <button class="btn btn-primary btn-lg btn-block" (click)="handleParse()" [disabled]="!file() || parsing()">
+          @if (parsing()) {
+            <span class="spinner"></span> Analyzing Resume...
+          } @else {
+            Analyze with AI
+          }
+        </button>
+      </div>
+    </div>
+
+    @if (parsing()) {
+      <div class="alert alert-info ra-parsing-alert">
+        <span class="spinner"></span>
+        <span>Sending resume to AI layout parser... This may take 15–30 seconds depending on file size.</span>
+      </div>
+    }
+  </section>
+
+  <!-- Results Section -->
+  @if (result()) {
+    @if (result().info?.suggestedBullets?.length > 0) {
+      <section class="ra-card mb-4 resume-suggested-card">
+        <div class="ra-card__head">
+          <div class="ra-card__title">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Suggested Points from Your Resume
+          </div>
+          <span class="text-primary text-xs">Click any point to add it to your email template</span>
+        </div>
+        <div class="resume-suggested-list">
+          @for (bullet of result().info.suggestedBullets; track $index) {
+            <div class="resume-suggested-bullet"
+              (click)="handleUseBullet(bullet)">
+              <span class="resume-bullet-icon">+</span>
+              <span class="resume-bullet-text">{{ bullet }}</span>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <section class="ra-card ra-results">
+      <div class="tabs ra-tabs">
+        <div class="tab" [class.active]="activeTab() === 'info'" (click)="activeTab.set('info')">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profile Info
+        </div>
+        <div class="tab" [class.active]="activeTab() === 'skills'" (click)="activeTab.set('skills')">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> Skills & Experience
+        </div>
+        <div class="tab" [class.active]="activeTab() === 'template'" (click)="activeTab.set('template')">
+          <app-icon-edit [size]="13" /> Generated Template
+        </div>
+        <div class="tab" [class.active]="activeTab() === 'markdown'" (click)="activeTab.set('markdown')">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Raw Markdown
+        </div>
+      </div>
+      <div class="divider"></div>
+
+      <div class="ra-tab-body">
+        @if (activeTab() === 'info') {
+          <div class="ra-profile-panel">
+            <div class="ra-profile-panel__avatar" aria-hidden="true">
+              {{ (result().info.name || '?').charAt(0) }}
+            </div>
+            <div class="ra-profile-panel__meta">
+              <div class="ra-profile-panel__name">{{ result().info.name || 'Profile not detected' }}</div>
+              <div class="ra-profile-panel__email">{{ result().info.email || 'No email extracted' }}</div>
+            </div>
+            <div class="grid-2 resume-info-grid">
+              <div class="resume-info-card">
+                <div class="resume-info-label">
+                  <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Full Name
+                </div>
+                <div class="resume-info-value" [class.detected]="result().info.name">
+                  {{ result().info.name || 'Not detected' }}
+                </div>
+              </div>
+              <div class="resume-info-card">
+                <div class="resume-info-label">
+                  <app-icon-edit [size]="11" /> Email
+                </div>
+                <div class="resume-info-value" [class.detected]="result().info.email">
+                  {{ result().info.email || 'Not detected' }}
+                </div>
+              </div>
+              <div class="resume-info-card">
+                <div class="resume-info-label">
+                  <app-icon-edit [size]="11" /> Phone
+                </div>
+                <div class="resume-info-value" [class.detected]="result().info.phone">
+                  {{ result().info.phone || 'Not detected' }}
+                </div>
+              </div>
+              <div class="resume-info-card">
+                <div class="resume-info-label">
+                  <app-icon-edit [size]="11" /> LinkedIn
+                </div>
+                <div class="resume-info-value" [class.detected]="result().info.linkedin">
+                  {{ result().info.linkedin || 'Not detected' }}
+                </div>
+              </div>
+              <div class="resume-info-card">
+                <div class="resume-info-label">
+                  <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> GitHub
+                </div>
+                <div class="resume-info-value" [class.detected]="result().info.github">
+                  {{ result().info.github || 'Not detected' }}
+                </div>
+              </div>
+            </div>
+            @if (result().info.summary) {
+              <div class="resume-summary-card">
+                <div class="resume-info-label">
+                  <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Summary / Objective
+                </div>
+                <div class="resume-summary-text">{{ result().info.summary }}</div>
+              </div>
+            }
+          </div>
+        }
+
+        @if (activeTab() === 'skills') {
+          <div class="resume-skills-section">
+            @if (result().info.skills.length > 0) {
+              <div>
+                <div class="resume-section-title">
+                  <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> Technical Skills ({{ result().info.skills.length }} detected)
+                </div>
+                <div class="resume-skill-tags">
+                  @for (s of result().info.skills; track $index) {
+                    <span class="resume-skill-tag">{{ s }}</span>
+                  }
+                </div>
+              </div>
+            }
+
+            @if (result().info.experience.length > 0) {
+              <div>
+                <div class="resume-section-title">
+                  <app-icon-resume [size]="15" /> Work Experience Highlights
+                </div>
+                <div class="resume-item-list">
+                  @for (e of result().info.experience; track $index) {
+                    <div class="resume-item-with-icon">
+                      <span class="resume-item-arrow">&#9656;</span>
+                      <span class="resume-item-text">{{ e }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            @if (result().info.education.length > 0) {
+              <div>
+                <div class="resume-section-title">
+                  <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Education
+                </div>
+                <div class="resume-item-list">
+                  @for (e of result().info.education; track $index) {
+                    <div class="resume-plain-item">{{ e }}</div>
+                  }
+                </div>
+              </div>
+            }
+
+            @if (result().info.projects.length > 0) {
+              <div>
+                <div class="resume-section-title">
+                  <app-icon-send [size]="15" /> Projects
+                </div>
+                <div class="resume-item-list">
+                  @for (p of result().info.projects; track $index) {
+                    <div class="resume-plain-item">{{ p }}</div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        @if (activeTab() === 'template') {
+          <div>
+            <div class="action-row mb-3">
+              <button class="btn btn-ghost btn-sm" (click)="handleRegenerateTemplate()"><app-icon-refresh [size]="13" /> Regenerate</button>
+              <button class="btn btn-success btn-sm" (click)="handleSaveAsCampaign()" [disabled]="savingCampaign()">
+                @if (savingCampaign()) {
+                  Creating...
+                } @else {
+                  <app-icon-check [size]="13" /> Save as Campaign
+                }
+              </button>
+              <button class="btn btn-primary btn-sm" (click)="router.navigate(['/campaigns/new'])">
+                <app-icon-campaign [size]="13" /> Open Campaign Editor
+              </button>
+              <button class="btn btn-ghost btn-sm" (click)="copyTemplate()">
+                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy
+              </button>
+            </div>
+
+            <div class="alert alert-info mb-3">
+              This template was auto-generated from your resume. Edit it below, then <strong>Save as Campaign</strong> to start sending.
+            </div>
+
+            <div class="grid-2 resume-template-grid">
+              <div class="ra-editor-pane">
+                <div class="resume-template-label">
+                  <app-icon-edit [size]="11" /> EDIT TEMPLATE
+                </div>
+                <textarea class="textarea mono-textarea resume-textarea"
+                  [ngModel]="emailTemplate()" (ngModelChange)="emailTemplate.set($event)"></textarea>
+              </div>
+              <div class="ra-preview-pane">
+                <div class="resume-template-label">
+                  <app-icon-eye [size]="11" /> PREVIEW
+                </div>
+                <div class="markdown-preview resume-preview"
+                  [innerHTML]="getPreviewHtml()">
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (activeTab() === 'markdown') {
+          <div>
+            <div class="flex-center-gap mb-2">
+              <div class="badge badge-sent">Extracted by AI</div>
+              <span class="text-muted text-xs">{{ result().markdown.length }} characters extracted</span>
+            </div>
+            <pre class="resume-raw-pre">{{ result().markdown }}</pre>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  @if (!result() && !parsing()) {
+    <section class="ra-card card-dashed ra-how">
+      <div class="ra-card__title mb-4">
+        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>
+        How Resume Analyzer Works
+      </div>
+      <div class="grid-3 resume-how-grid">
+        <div class="resume-how-card">
+          <div class="resume-how-step">01</div>
+          <div class="resume-how-icon"><app-icon-upload [size]="24" /></div>
+          <div class="resume-how-title">Step 1: Upload Resume</div>
+          <div class="resume-how-desc">Upload your resume as PDF, DOC, or DOCX. Up to 10MB.</div>
+        </div>
+        <div class="resume-how-card">
+          <div class="resume-how-step">02</div>
+          <div class="resume-how-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>
+          </div>
+          <div class="resume-how-title">Step 2: AI Parses It</div>
+          <div class="resume-how-desc">Our AI layout parser extracts all text, skills, experience, and education from your resume.</div>
+        </div>
+        <div class="resume-how-card">
+          <div class="resume-how-step">03</div>
+          <div class="resume-how-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div class="resume-how-title">Step 3: Get Suggestions</div>
+          <div class="resume-how-desc">Review extracted bullet points — click any to add to your email template.</div>
+        </div>
+        <div class="resume-how-card">
+          <div class="resume-how-step">04</div>
+          <div class="resume-how-icon"><app-icon-edit [size]="24" /></div>
+          <div class="resume-how-title">Step 4: Custom Template</div>
+          <div class="resume-how-desc">A professional email template is auto-generated using your resume details.</div>
+        </div>
+        <div class="resume-how-card">
+          <div class="resume-how-step">05</div>
+          <div class="resume-how-icon"><app-icon-send [size]="24" /></div>
+          <div class="resume-how-title">Step 5: Save & Send</div>
+          <div class="resume-how-desc">Save as a Campaign and send to all HR contacts with one click.</div>
+        </div>
+      </div>
+    </section>
+  }
+</div>

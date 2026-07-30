@@ -1,0 +1,18 @@
+<div class="table-wrapper">
+  <table>
+    <thead><tr>
+      @for (col of colsArr; track col) {
+        <th><app-skeleton-line [width]="(50 + col * 10) + '%'" height="0.65rem" /></th>
+      }
+    </tr></thead>
+    <tbody>
+      @for (row of rowsArr; track row) {
+        <tr>
+          @for (col of colsArr; track col) {
+            <td><app-skeleton-line [width]="col === 0 ? '20px' : (40 + col * 8) + '%'" height="0.85rem" /></td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

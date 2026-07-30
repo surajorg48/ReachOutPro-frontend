@@ -1,0 +1,119 @@
+<div class="page-container elog">
+    <header class="elog-header">
+        <div class="elog-header__copy">
+            <p class="elog-eyebrow">Outreach history</p>
+            <h1 class="page-header-title">
+                <app-icon-logs [size]="24" /> Email Log
+            </h1>
+            <p>Full history of all email send attempts</p>
+        </div>
+    </header>
+
+    <!-- Stats -->
+    <section class="elog-kpis" aria-label="Email log metrics">
+        @if (loading()) {
+            @for (i of [1,2,3,4]; track i) {
+                <app-skeleton-stat-card />
+            }
+        } @else {
+            @for (card of statCards(); track card.label; let idx = $index) {
+                <article class="elog-kpi" [ngClass]="card.color" [style.--kpi-delay]="(idx * 60) + 'ms'">
+                    <div class="elog-kpi__top">
+                        <div class="stat-icon-wrap" [ngClass]="card.color">
+                            <ng-container *ngComponentOutlet="card.icon; inputs: { size: 20 }"></ng-container>
+                        </div>
+                    </div>
+                    <div class="stat-value">{{ card.value | number }}</div>
+                    <div class="stat-label">{{ card.label }}</div>
+                </article>
+            }
+        }
+    </section>
+
+    <!-- Toolbar -->
+    <div class="card elog-toolbar">
+        <div class="elog-toolbar__filters">
+            <label class="elog-toolbar__label">Status</label>
+            <select class="select log-filter-select" [ngModel]="statusFilter()" (ngModelChange)="onFilterChange($event)">
+                <option value="">All Status</option>
+                <option value="sent">Sent</option>
+                <option value="failed">Failed</option>
+                <option value="pending">Pending</option>
+            </select>
+        </div>
+        <div class="log-toolbar-actions">
+            <button class="btn btn-ghost btn-sm elog-pill" (click)="exportExcel()">
+                <app-icon-download [size]="14" /> Export Excel
+            </button>
+            <button class="btn btn-ghost btn-sm elog-pill" (click)="load()">
+                <app-icon-refresh [size]="14" /> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Content -->
+    @if (loading()) {
+        <app-skeleton-table [rows]="8" [cols]="7" />
+    } @else if (logs().length === 0) {
+        <div class="card empty-state elog-empty">
+            <app-icon-logs [size]="40" class="empty-icon" />
+            <h3>No emails yet</h3>
+            <p>Email history will appear here once you start sending campaigns.</p>
+        </div>
+    } @else {
+        <div class="table-wrapper elog-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Company</th>
+                        <th>Email</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Sent At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (log of logs(); track log.id; let i = $index) {
+                        <tr>
+                            <td class="text-muted">{{ i + 1 }}</td>
+                            <td class="bold">{{ log.company_name || '—' }}</td>
+                            <td class="mono text-primary">{{ log.recipient_email }}</td>
+                            <td class="text-truncate">{{ log.subject }}</td>
+                            <td>
+                                @if (log.status === 'sent') {
+                                    <span class="badge badge-sent">Sent</span>
+                                } @else if (log.status === 'failed') {
+                                    <span class="badge badge-failed">Failed</span>
+                                } @else {
+                                    <span class="badge badge-pending">Pending</span>
+                                }
+                            </td>
+                            <td class="text-muted text-nowrap">
+                                {{ log.sent_at ? (log.sent_at | date:'MMM d, HH:mm') : '—' }}
+                            </td>
+                            <td>
+                                <div class="action-group">
+                                    @if (log.status === 'failed') {
+                                        <button class="btn btn-retry btn-sm" (click)="handleRetry(log.id)">
+                                            <app-icon-retry /> Retry
+                                        </button>
+                                    }
+                                    @if (log.error_msg) {
+                                        <button class="btn btn-ghost btn-sm btn-icon" (click)="toast.error(log.error_msg)" data-tooltip="View error">
+                                            <app-icon-alert [size]="14" />
+                                        </button>
+                                    }
+                                    <button class="btn btn-ghost btn-sm btn-icon" (click)="handleDelete(log.id)" data-tooltip="Delete">
+                                        <app-icon-trash [size]="14" />
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

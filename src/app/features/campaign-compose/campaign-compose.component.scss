@@ -1,0 +1,298 @@
+:host {
+  display: block;
+}
+
+.compose-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 1200px;
+}
+
+/* ─── Header ─── */
+.compose-header {
+  height: auto;
+  min-height: 0;
+  margin-bottom: 24px;
+  padding: 0;
+  overflow: visible;
+}
+
+.compose-header__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: visible;
+
+  p {
+    margin: 0;
+    line-height: 1.5;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+}
+
+.compose-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+  font-size: 1.625rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.4;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+.compose-title__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-50);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* ─── Basics card ─── */
+.compose-fields {
+  margin-bottom: var(--space-5);
+  border-radius: var(--radius-2xl);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.compose-fields__head {
+  margin-bottom: 20px;
+}
+
+.compose-fields__eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-primary);
+  margin-bottom: 4px;
+}
+
+.compose-fields__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.compose-field-row {
+  margin-bottom: var(--space-4);
+}
+
+.compose-field-group {
+  margin-bottom: var(--space-4);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* ─── Editor card ─── */
+.compose-editor {
+  margin-bottom: var(--space-5);
+  border-radius: var(--radius-2xl);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.compose-editor-header {
+  margin-bottom: 0;
+  align-items: center;
+}
+
+.compose-editor-title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-primary);
+
+  svg {
+    color: var(--color-primary);
+  }
+}
+
+.compose-tabs {
+  margin-bottom: 0;
+  border-bottom: none;
+  background: var(--bg-secondary);
+  padding: 4px;
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.compose-editor-grid {
+  margin-top: 0;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.compose-pane {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.compose-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.compose-textarea {
+  min-height: 400px;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  border-radius: var(--radius-xl);
+  background: var(--bg-tertiary);
+  border-color: var(--border-light);
+  padding: var(--space-4) var(--space-5);
+
+  &:focus {
+    background: var(--bg-surface);
+  }
+}
+
+.compose-placeholders {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+}
+
+.compose-placeholder-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.compose-chip {
+  font-size: 0.68rem;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  color: var(--color-primary-dark);
+  border-color: var(--color-primary-100);
+  box-shadow: var(--shadow-xs);
+
+  &:hover:not(:disabled) {
+    background: var(--color-primary-50);
+    border-color: var(--color-primary-200);
+    color: var(--color-primary-dark);
+  }
+}
+
+.compose-preview {
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  border: 1px solid var(--border-default);
+  min-height: 400px;
+  font-size: 0.875rem;
+  line-height: 1.75;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background-image:
+    linear-gradient(180deg, var(--bg-tertiary) 0%, var(--bg-surface) 48px);
+}
+
+/* ─── Actions ─── */
+.compose-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: var(--space-4) var(--space-5);
+  background: var(--bg-surface);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-card);
+  position: sticky;
+  bottom: var(--space-4);
+  z-index: 10;
+}
+
+.compose-actions__primary {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.spinner-sm {
+  width: 14px;
+  height: 14px;
+  border-width: 2px;
+}
+
+/* ─── Modal ─── */
+.compose-modal {
+  border-radius: var(--radius-2xl);
+  max-width: 480px;
+}
+
+.modal-title__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--color-warning-50);
+  color: var(--color-warning-dark);
+}
+
+.compose-modal-desc {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-4);
+  line-height: 1.55;
+}
+
+.compose-modal-field {
+  margin-bottom: var(--space-4);
+}
+
+@media (max-width: 900px) {
+  .compose-editor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .compose-editor-grid--edit .compose-pane--preview,
+  .compose-editor-grid--preview .compose-pane--edit {
+    display: none;
+  }
+
+  .compose-editor-grid--edit .compose-pane--edit,
+  .compose-editor-grid--preview .compose-pane--preview {
+    display: flex;
+  }
+
+  .compose-actions {
+    position: static;
+  }
+
+  .compose-actions__primary {
+    width: 100%;
+    margin-left: 0;
+
+    .btn {
+      flex: 1;
+    }
+  }
+}
