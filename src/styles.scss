@@ -1,21 +1,26 @@
 /* ============================================
-   ReachOut Pro — Enterprise SaaS Design System
-   White · Light Gray · Teal · Spacious · Premium
+   ReachOut Pro — FinTech Design System
+   Coral · Yellow · Ink · Soft Gray · Premium
    ============================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Primary — Teal */
-  --color-primary: #0D9488;
-  --color-primary-light: #14B8A6;
-  --color-primary-dark: #0F766E;
-  --color-primary-50: #F0FDFA;
-  --color-primary-100: #CCFBF1;
-  --color-primary-200: #99F6E4;
-  --color-primary-500: #14B8A6;
-  --color-primary-600: #0D9488;
-  --color-primary-700: #0F766E;
+  /* Primary — Coral FinTech (reference) */
+  --color-primary: #E85D3F;
+  --color-primary-light: #F07A61;
+  --color-primary-dark: #D14E33;
+  --color-primary-50: #FDF0EC;
+  --color-primary-100: #FADFD8;
+  --color-primary-200: #F4B8A8;
+  --color-primary-500: #E85D3F;
+  --color-primary-600: #E85D3F;
+  --color-primary-700: #D14E33;
+
+  /* Brand accents */
+  --color-brand-yellow: #FAD02E;
+  --color-brand-yellow-dark: #E5BC1A;
+  --color-ink: #111111;
 
   --color-success: #10B981;
   --color-success-light: #34D399;
@@ -40,36 +45,36 @@
   --color-sky-100: #E0F2FE;
 
   /* Surfaces */
-  --bg-app: #F5F7FA;
+  --bg-app: #F7F7F7;
   --bg-surface: #FFFFFF;
   --bg-surface-elevated: #FFFFFF;
   --bg-secondary: #F1F5F9;
   --bg-tertiary: #F8FAFC;
   --bg-hover: #F1F5F9;
-  --bg-active: #E2E8F0;
-  --bg-overlay: rgba(15, 23, 42, 0.4);
+  --bg-active: #E5E7EB;
+  --bg-overlay: rgba(17, 17, 17, 0.4);
 
   /* Text */
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-tertiary: #64748B;
-  --text-muted: #94A3B8;
+  --text-primary: #222222;
+  --text-secondary: #4B5563;
+  --text-tertiary: #6B7280;
+  --text-muted: #9CA3AF;
   --text-inverse: #FFFFFF;
 
   /* Borders */
-  --border-default: #E8ECF1;
-  --border-light: #F1F5F9;
-  --border-hover: #CBD5E1;
+  --border-default: #E5E7EB;
+  --border-light: #F3F4F6;
+  --border-hover: #D1D5DB;
   --border-focus: var(--color-primary);
 
   /* Soft floating shadows */
-  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.06);
-  --shadow-lg: 0 12px 40px rgba(15, 23, 42, 0.08);
-  --shadow-xl: 0 20px 50px rgba(15, 23, 42, 0.1);
-  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.05);
-  --shadow-focus: 0 0 0 3px rgba(13, 148, 136, 0.18);
+  --shadow-xs: 0 1px 2px rgba(17, 17, 17, 0.04);
+  --shadow-sm: 0 4px 12px rgba(17, 17, 17, 0.04);
+  --shadow-md: 0 8px 24px rgba(17, 17, 17, 0.06);
+  --shadow-lg: 0 12px 40px rgba(17, 17, 17, 0.08);
+  --shadow-xl: 0 20px 50px rgba(17, 17, 17, 0.1);
+  --shadow-card: 0 10px 30px rgba(17, 17, 17, 0.05);
+  --shadow-focus: 0 0 0 3px rgba(232, 93, 63, 0.18);
 
   /* Spacing */
   --space-0: 0;
@@ -113,6 +118,25 @@
   --z-toast: 1100;
 }
 
+html.theme-dark {
+  --bg-app: #121417;
+  --bg-surface: #1C1F24;
+  --bg-surface-elevated: #242830;
+  --bg-secondary: #1A1D22;
+  --bg-tertiary: #16191E;
+  --bg-hover: #2A2F38;
+  --bg-active: #323842;
+  --text-primary: #F3F4F6;
+  --text-secondary: #D1D5DB;
+  --text-tertiary: #9CA3AF;
+  --text-muted: #6B7280;
+  --border-default: #2F3540;
+  --border-light: #262B34;
+  --border-hover: #3F4654;
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -154,7 +178,7 @@ button, input, select, textarea {
   display: flex;
   min-height: 100vh;
   background:
-    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(13, 148, 136, 0.06), transparent 50%),
+    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(232, 93, 63, 0.06), transparent 50%),
     radial-gradient(ellipse 60% 40% at 100% 0%, rgba(14, 165, 233, 0.04), transparent 45%),
     var(--bg-app);
 }
@@ -170,6 +194,21 @@ button, input, select, textarea {
   padding-right: var(--sidebar-gap);
   overflow-x: hidden;
   overflow-y: visible;
+}
+
+.main-content > *:not(app-topbar) {
+  animation: pageEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .app-layout:has(.sidebar.collapsed) .main-content {

@@ -20,13 +20,7 @@
     </button>
 
     <a routerLink="/" class="app-header__mobile-logo" (click)="mobileNavOpen.set(false)">
-      <span class="app-header__mobile-mark">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-          <polyline points="22,6 12,13 2,6"/>
-        </svg>
-      </span>
-      <span class="app-header__mobile-brand">ReachOut</span>
+      <img class="app-header__mobile-logo-img" src="/assets/logo/logo.png" alt="ReachOut Pro" />
     </a>
 
     <!-- Left: breadcrumb + title -->
@@ -64,11 +58,11 @@
 
     <!-- Right: actions + user -->
     <div class="app-header__right">
-      <a routerLink="/companies" class="app-header__cta">
+      <a routerLink="/loans" class="app-header__cta">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
         </svg>
-        <span>Create Company</span>
+        <span>New Application</span>
       </a>
 
       <button type="button" class="app-header__icon-btn app-header__search-mobile" aria-label="Search">
@@ -77,21 +71,39 @@
         </svg>
       </button>
 
-      <button type="button" class="app-header__icon-btn" aria-label="Notifications">
+      <button
+        type="button"
+        class="app-header__icon-btn app-header__hide-sm"
+        (click)="toggleTheme()"
+        [attr.aria-label]="darkMode() ? 'Switch to light theme' : 'Switch to dark theme'"
+        [attr.title]="darkMode() ? 'Light mode' : 'Dark mode'"
+      >
+        @if (darkMode()) {
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+          </svg>
+        } @else {
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        }
+      </button>
+
+      <a routerLink="/notifications" class="app-header__icon-btn" aria-label="Notifications">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
         </svg>
         <span class="app-header__badge" aria-hidden="true">3</span>
-      </button>
+      </a>
 
-      <button type="button" class="app-header__icon-btn app-header__hide-sm" aria-label="Help">
+      <a routerLink="/help" class="app-header__icon-btn app-header__hide-sm" aria-label="Help">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/>
           <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
           <line x1="12" y1="17" x2="12.01" y2="17"/>
         </svg>
-      </button>
+      </a>
 
       <a routerLink="/settings" class="app-header__icon-btn app-header__hide-sm" aria-label="Settings">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -130,7 +142,7 @@
               </div>
             </div>
             <div class="app-header__dropdown-sep"></div>
-            <a routerLink="/settings" class="app-header__dropdown-item" role="menuitem" (click)="closeMenus()">
+            <a routerLink="/profile" class="app-header__dropdown-item" role="menuitem" (click)="closeMenus()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               Profile
             </a>
@@ -142,7 +154,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/></svg>
               Preferences
             </a>
-            <a routerLink="/settings" class="app-header__dropdown-item" role="menuitem" (click)="closeMenus()">
+            <a routerLink="/subscription" class="app-header__dropdown-item" role="menuitem" (click)="closeMenus()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
               Billing
             </a>
@@ -165,13 +177,16 @@
   @if (mobileNavOpen()) {
     <nav class="app-header__mobile-nav" aria-label="Mobile navigation">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenus()">Dashboard</a>
+      <a routerLink="/leads" routerLinkActive="active" (click)="closeMenus()">Leads</a>
+      <a routerLink="/customers" routerLinkActive="active" (click)="closeMenus()">Customers</a>
+      <a routerLink="/loans" routerLinkActive="active" (click)="closeMenus()">Loans</a>
+      <a routerLink="/payments" routerLinkActive="active" (click)="closeMenus()">Payments</a>
+      <a routerLink="/analytics" routerLinkActive="active" (click)="closeMenus()">Analytics</a>
       <a routerLink="/companies" routerLinkActive="active" (click)="closeMenus()">Companies</a>
-      <a routerLink="/discover" routerLinkActive="active" (click)="closeMenus()">Discover</a>
-      <a routerLink="/scraper" routerLinkActive="active" (click)="closeMenus()">Scraper</a>
       <a routerLink="/campaigns" routerLinkActive="active" (click)="closeMenus()">Campaigns</a>
-      <a routerLink="/email-log" routerLinkActive="active" (click)="closeMenus()">Email Logs</a>
-      <a routerLink="/resume" routerLinkActive="active" (click)="closeMenus()">Resume Analyzer</a>
+      <a routerLink="/wallet" routerLinkActive="active" (click)="closeMenus()">Wallet</a>
       <a routerLink="/settings" routerLinkActive="active" (click)="closeMenus()">Settings</a>
+      <a routerLink="/help" routerLinkActive="active" (click)="closeMenus()">Help</a>
     </nav>
   }
 </header>

@@ -28,14 +28,14 @@
 .otp-digit:focus,
 .otp-digit.focused {
   background: #FFFFFF;
-  border-color: #14B8A6;
-  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.15);
+  border-color: rgba(250, 208, 46, 0.95);
+  box-shadow: 0 0 0 4px rgba(250, 208, 46, 0.25);
 }
 
 .otp-digit.filled {
-  background: #F0FDFA;
-  border-color: #99F6E4;
-  color: #0D9488;
+  background: #FFFBEB;
+  border-color: #FDE68A;
+  color: #111827;
 }
 
 @media (max-width: 420px) {

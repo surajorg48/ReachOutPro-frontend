@@ -95,7 +95,7 @@ export class SubscriptionService {
           email: user?.email ?? '',
           name: user?.fullName ?? '',
         },
-        theme: { color: '#0D9488' },
+        theme: { color: '#E85D3F' },
         handler: (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
           this.verifyPayment({
             subscriptionId: plan.id,

@@ -14,21 +14,46 @@ interface PageMeta {
 const PAGE_META: Record<string, PageMeta> = {
   '/': {
     section: 'Main',
-    title: 'Dashboard',
-    description: 'Outreach performance and activity overview',
+    title: 'Financial Dashboard',
+    description: 'Portfolio performance and activity overview',
+  },
+  '/leads': {
+    section: 'CRM',
+    title: 'Leads',
+    description: 'Track and qualify inbound sales prospects',
+  },
+  '/customers': {
+    section: 'CRM',
+    title: 'Customers',
+    description: 'Manage customer profiles and relationship status',
   },
   '/companies': {
-    section: 'Main',
+    section: 'CRM',
     title: 'Companies',
     description: 'Manage companies, contacts, and outreach status',
   },
+  '/loans': {
+    section: 'Lending',
+    title: 'Loan Applications',
+    description: 'Review applications across personal, business, and home loans',
+  },
+  '/emi': {
+    section: 'Lending',
+    title: 'EMI Schedule',
+    description: 'Upcoming installments and collection status',
+  },
+  '/payments': {
+    section: 'Lending',
+    title: 'Payments',
+    description: 'Settlements, refunds, and payment attempts',
+  },
   '/discover': {
-    section: 'Main',
+    section: 'Outreach',
     title: 'Discover',
     description: 'Find companies by industry and location',
   },
   '/scraper': {
-    section: 'Main',
+    section: 'Outreach',
     title: 'Scraper',
     description: 'Extract HR emails from company websites',
   },
@@ -47,15 +72,80 @@ const PAGE_META: Record<string, PageMeta> = {
     title: 'Email Logs',
     description: 'Full history of email send attempts',
   },
+  '/analytics': {
+    section: 'Insights',
+    title: 'Analytics',
+    description: 'Conversion, delinquency, and channel trends',
+  },
+  '/reports': {
+    section: 'Insights',
+    title: 'Reports',
+    description: 'Portfolio health and collection performance',
+  },
+  '/documents': {
+    section: 'Insights',
+    title: 'Documents',
+    description: 'KYC packs, agreements, and supporting files',
+  },
   '/resume': {
     section: 'Tools',
     title: 'Resume Analyzer',
     description: 'Parse resumes and generate email templates',
   },
+  '/users': {
+    section: 'Admin',
+    title: 'User Management',
+    description: 'Team members with access to the workspace',
+  },
+  '/roles': {
+    section: 'Admin',
+    title: 'Roles & Permissions',
+    description: 'Permission sets for lending and CRM workflows',
+  },
+  '/notifications': {
+    section: 'Account',
+    title: 'Notifications',
+    description: 'Alerts for EMI, approvals, and campaign events',
+  },
+  '/profile': {
+    section: 'Account',
+    title: 'Profile',
+    description: 'Your personal account details',
+  },
   '/settings': {
-    section: 'Tools',
+    section: 'Account',
     title: 'Settings',
     description: 'Profile, Gmail accounts, and preferences',
+  },
+  '/subscription': {
+    section: 'Account',
+    title: 'Subscription',
+    description: 'Plan, billing, and usage limits',
+  },
+  '/wallet': {
+    section: 'Account',
+    title: 'Wallet',
+    description: 'Credits, payouts, and balance overview',
+  },
+  '/referral': {
+    section: 'Account',
+    title: 'Referral',
+    description: 'Invite partners and earn rewards',
+  },
+  '/help': {
+    section: 'Account',
+    title: 'Help Center',
+    description: 'Guides and support for ReachOut Pro',
+  },
+  '/admin/plans': {
+    section: 'Admin',
+    title: 'Admin Plans',
+    description: 'Manage subscription plan catalog',
+  },
+  '/error-demo/500': {
+    section: 'System',
+    title: 'Server Error',
+    description: 'Demo 500 error page',
   },
 };
 
@@ -75,6 +165,7 @@ export class TopbarComponent implements OnInit {
   mobileNavOpen = signal(false);
   searchFocused = signal(false);
   currentUrl = signal('/');
+  darkMode = signal(false);
 
   user = this.authService.user;
 
@@ -124,6 +215,12 @@ export class TopbarComponent implements OnInit {
     this.authService.logout().subscribe();
   }
 
+  toggleTheme() {
+    const next = !this.darkMode();
+    this.darkMode.set(next);
+    document.documentElement.classList.toggle('theme-dark', next);
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
@@ -143,6 +240,13 @@ export class TopbarComponent implements OnInit {
 
   private resolvePage(url: string): PageMeta {
     if (PAGE_META[url]) return PAGE_META[url];
+    if (url.startsWith('/loans/')) {
+      return {
+        section: 'Lending',
+        title: 'Loan Details',
+        description: 'Application summary, terms, and borrower profile',
+      };
+    }
     if (url.startsWith('/campaigns/') && url.endsWith('/edit')) {
       return {
         section: 'Outreach',
@@ -155,8 +259,8 @@ export class TopbarComponent implements OnInit {
     }
     return {
       section: 'Main',
-      title: 'Dashboard',
-      description: 'Outreach performance and activity overview',
+      title: 'Financial Dashboard',
+      description: 'Portfolio performance and activity overview',
     };
   }
 }

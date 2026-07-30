@@ -1,236 +1,328 @@
-<div class="page-container dash">
-  <!-- Welcome header -->
-  <header class="dash-welcome">
-    <div class="dash-welcome__copy">
-      <p class="dash-welcome__eyebrow">ReachOut Pro</p>
-      <h1 class="dash-welcome__title">Overview</h1>
-      <p class="dash-welcome__sub">Your outreach performance at a glance — companies, campaigns, and delivery health.</p>
+<div class="ft-dash">
+  <!-- In-page fintech header -->
+  <header class="ft-header">
+    <div class="ft-header__left">
+      <button type="button" class="ft-icon-btn" aria-label="Menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/>
+        </svg>
+      </button>
+      <div class="ft-brand">
+        <span class="ft-brand__mark">RO</span>
+        <div class="ft-brand__text">
+          <strong>ReachOut</strong>
+          <span>Dashboard</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ft-header__center">
+      <div class="ft-ai">
+        <div class="ft-ai__copy">
+          <p class="ft-ai__hello">Hey, Need help?</p>
+          <p class="ft-ai__hint">Just ask me anything!</p>
+        </div>
+        <div class="ft-ai__input">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+          </svg>
+          <input type="text" placeholder="Ask AI about outreach, companies, campaigns..." aria-label="AI assistant" />
+        </div>
+      </div>
+    </div>
+
+    <div class="ft-header__right">
+      <button type="button" class="ft-icon-btn" aria-label="Notifications">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+        </svg>
+        <span class="ft-badge"></span>
+      </button>
+      <button type="button" class="ft-add" (click)="navigate('/companies')" aria-label="Create company">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </button>
+      <div class="ft-search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="search" placeholder="Start searching here..." aria-label="Search dashboard" />
+      </div>
     </div>
   </header>
 
-  <!-- KPI analytics -->
-  <section class="dash-kpis" aria-label="Key metrics">
+  <!-- Action strip -->
+  <div class="ft-strip">
+    <div class="ft-date-pill">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      {{ todayLabel }}
+    </div>
+    <button type="button" class="ft-cta" (click)="navigate('/campaigns')">
+      Show my Campaigns
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- KPI overview -->
+  <section class="ft-kpis" aria-label="Outreach overview">
     @if (loading()) {
       @for (i of [1,2,3,4,5,6]; track i) {
         <app-skeleton-stat-card />
       }
     } @else {
       @for (card of statCards(); track card.label; let idx = $index) {
-        <article class="kpi-card" [ngClass]="card.color" [style.--kpi-delay]="(idx * 60) + 'ms'">
-          <div class="kpi-card__top">
-            <div class="stat-icon-wrap" [ngClass]="card.color">
-              <ng-container *ngComponentOutlet="card.icon; inputs: { size: 20 }"></ng-container>
-            </div>
-            <span class="kpi-card__trend" aria-hidden="true">
-              <span class="kpi-card__trend-bar"></span>
-              <span class="kpi-card__trend-bar"></span>
-              <span class="kpi-card__trend-bar"></span>
+        <article class="ft-kpi" [class]="'ft-kpi--' + card.color" [style.--d]="(idx * 50) + 'ms'">
+          <div class="ft-kpi__top">
+            <span class="ft-kpi__label">{{ card.label }}</span>
+            <span class="ft-kpi__icon">
+              <ng-container *ngComponentOutlet="card.icon; inputs: { size: 16 }"></ng-container>
             </span>
           </div>
-          <div class="stat-value">{{ card.value | number }}</div>
-          <div class="stat-label">{{ card.label }}</div>
+          <div class="ft-kpi__value">{{ card.value | number }}</div>
+          <div class="ft-kpi__foot">
+            <span class="ft-kpi__trend">{{ card.trend }}</span>
+            <span class="ft-kpi__spark" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i>
+            </span>
+          </div>
         </article>
       }
     }
   </section>
 
-  <!-- Charts + week strip -->
-  <section class="dash-analytics">
-    <div class="chart-container chart-wide dash-panel dash-panel--bar">
-      <div class="dash-panel__head">
-        <div>
-          <div class="chart-title">Email Performance</div>
-          <div class="chart-subtitle">Overview of all email activity</div>
-        </div>
-      </div>
-      @if (loading()) {
-        <app-skeleton-card [height]="180" />
-      } @else {
-        <div class="chart-canvas">
-          <canvas baseChart
-            [data]="barChartData()"
-            [options]="barChartOptions"
-            [type]="'bar'">
-          </canvas>
-        </div>
-      }
-    </div>
-
-    <div class="chart-container chart-narrow dash-panel dash-panel--pie">
-      <div class="dash-panel__head">
-        <div>
-          <div class="chart-title">Company Status</div>
-          <div class="chart-subtitle">Contact progress breakdown</div>
-        </div>
-      </div>
-      @if (loading()) {
-        <app-skeleton-card [height]="180" />
-      } @else if (stats().total === 0) {
-        <div class="chart-empty">
-          <span>No data yet</span>
-        </div>
-      } @else {
-        <div class="chart-donut-wrapper">
-          <div class="chart-canvas chart-canvas--donut">
-            <canvas baseChart
-              [data]="pieChartData()"
-              [options]="pieChartOptions"
-              [type]="'doughnut'">
-            </canvas>
+  <!-- Main grid -->
+  <div class="ft-grid">
+    <div class="ft-main">
+      <!-- Charts row -->
+      <section class="ft-charts">
+        <div class="ft-card ft-card--chart">
+          <div class="ft-card__head">
+            <div>
+              <h2 class="ft-card__title">Outreach Performance</h2>
+              <p class="ft-card__sub">Sent, failed, pending and today</p>
+            </div>
+            <span class="ft-chip">Live</span>
           </div>
-          <div class="donut-center">
-            <div class="donut-value">{{ stats().total }}</div>
-            <div class="donut-label">TOTAL</div>
-          </div>
-        </div>
-      }
-
-      @if (!loading() && pieLegend().length > 0) {
-        <div class="chart-legend">
-          @for (d of pieLegend(); track d.name) {
-            <div class="legend-item">
-              <div class="legend-dot" [style.background]="d.color"></div>
-              <span class="legend-name">{{ d.name }}</span>
-              <span class="legend-value">{{ d.value }}</span>
+          @if (loading()) {
+            <app-skeleton-card [height]="220" />
+          } @else {
+            <div class="ft-chart-box">
+              <canvas baseChart
+                [data]="barChartData()"
+                [options]="barChartOptions"
+                [type]="'bar'">
+              </canvas>
             </div>
           }
         </div>
-      }
-    </div>
 
-    <!-- Visual-only week strip -->
-    <aside class="dash-week dash-panel" aria-label="This week">
-      <div class="dash-week__head">
-        <div class="chart-title">This Week</div>
-        <div class="chart-subtitle">Schedule snapshot</div>
-      </div>
-      <div class="week-strip">
-        <div class="week-day">
-          <span class="week-day__label">Mon</span>
-          <span class="week-day__num">20</span>
-        </div>
-        <div class="week-day">
-          <span class="week-day__label">Tue</span>
-          <span class="week-day__num">21</span>
-        </div>
-        <div class="week-day">
-          <span class="week-day__label">Wed</span>
-          <span class="week-day__num">22</span>
-        </div>
-        <div class="week-day">
-          <span class="week-day__label">Thu</span>
-          <span class="week-day__num">23</span>
-        </div>
-        <div class="week-day">
-          <span class="week-day__label">Fri</span>
-          <span class="week-day__num">24</span>
-        </div>
-        <div class="week-day">
-          <span class="week-day__label">Sat</span>
-          <span class="week-day__num">25</span>
-        </div>
-        <div class="week-day week-day--today">
-          <span class="week-day__label">Sun</span>
-          <span class="week-day__num">26</span>
-        </div>
-      </div>
-      <div class="week-strip__footer">
-        <span class="week-strip__hint">Today highlighted</span>
-        <span class="week-strip__pill">Jul 2026</span>
-      </div>
-    </aside>
-  </section>
-
-  <!-- Quick actions + activity -->
-  <section class="dash-bottom">
-    <div class="chart-container dash-panel dash-panel--actions">
-      <div class="dash-panel__head">
-        <div class="chart-title">Quick Actions</div>
-        <div class="chart-subtitle">Jump into common workflows</div>
-      </div>
-
-      <div class="quick-actions-list">
-        @for (action of quickActions; track action.path) {
-          <button class="quick-action-btn" (click)="navigate(action.path)">
-            <div class="qa-icon" [style.background]="action.color + '12'" [style.color]="action.color">
-              <ng-container *ngComponentOutlet="action.icon; inputs: { size: 16 }"></ng-container>
+        <div class="ft-card ft-card--donut">
+          <div class="ft-card__head">
+            <div>
+              <h2 class="ft-card__title">Pipeline Status</h2>
+              <p class="ft-card__sub">Company contact breakdown</p>
             </div>
-            <div class="qa-content">
-              <div class="qa-label">{{ action.label }}</div>
-              <div class="qa-sub">{{ action.sub }}</div>
-            </div>
-            <app-icon-chevron-right class="qa-chevron" />
-          </button>
-        }
-      </div>
-
-      @if (!loading() && stats().totalSent > 0) {
-        <div class="success-banner">
-          <app-icon-trend-up [size]="18" class="success-banner-icon" />
-          <div>
-            <div class="success-banner-value">{{ successRate() }}%</div>
-            <div class="success-banner-label">Email delivery success rate</div>
           </div>
-        </div>
-      }
-    </div>
-
-    <div class="chart-container dash-panel dash-panel--activity">
-      <div class="chart-header activity-header">
-        <div>
-          <div class="chart-title">Recent Activity</div>
-          <div class="chart-subtitle">Latest outbound emails</div>
-        </div>
-        <button class="btn btn-ghost btn-sm" (click)="navigate('/email-log')">
-          View all
-        </button>
-      </div>
-
-      @if (loading()) {
-        <div class="activity-loading">
-          @for (i of [1,2,3,4,5]; track i) {
-            <div class="activity-loading-row">
-              <div class="skeleton activity-skeleton-dot"></div>
-              <div class="activity-skeleton-content">
-                <div class="skeleton activity-skeleton-line"></div>
+          @if (loading()) {
+            <app-skeleton-card [height]="200" />
+          } @else if (stats().total === 0) {
+            <div class="ft-empty">
+              <p>No pipeline data yet</p>
+            </div>
+          } @else {
+            <div class="ft-donut">
+              <div class="ft-donut__canvas">
+                <canvas baseChart
+                  [data]="pieChartData()"
+                  [options]="pieChartOptions"
+                  [type]="'doughnut'">
+                </canvas>
+                <div class="ft-donut__center">
+                  <strong>{{ contactRate() }}%</strong>
+                  <span>Contacted</span>
+                </div>
               </div>
-              <div class="skeleton activity-skeleton-badge"></div>
+              <div class="ft-legend">
+                @for (d of pieLegend(); track d.name) {
+                  <div class="ft-legend__row">
+                    <span class="ft-legend__dot" [style.background]="d.color"></span>
+                    <span class="ft-legend__name">{{ d.name }}</span>
+                    <span class="ft-legend__val">{{ d.value }}</span>
+                  </div>
+                }
+              </div>
             </div>
           }
         </div>
-      } @else if (recentLogs().length === 0) {
-        <div class="empty-state">
-          <app-icon-activity [size]="32" style="opacity: 0.2; display: flex;" />
-          <p>No emails sent yet</p>
-        </div>
-      } @else {
-        <div class="activity-table">
-          <div class="activity-table__head">
-            <span>Recipient</span>
-            <span>Status</span>
-            <span>Sent</span>
+      </section>
+
+      <!-- Activity manager -->
+      <section class="ft-card ft-activity">
+        <div class="ft-card__head ft-activity__head">
+          <div>
+            <h2 class="ft-card__title">Activity Manager</h2>
+            <p class="ft-card__sub">Recent applications and outbound email activity</p>
           </div>
-          <div class="activity-list">
-            @for (log of recentLogs(); track log.id) {
-              <div class="activity-item">
-                <div class="activity-dot" [ngClass]="log.status"></div>
-                <div class="activity-content">
-                  <div class="activity-name">{{ log.company_name || log.recipient_email }}</div>
-                  <div class="activity-email">{{ log.recipient_email }}</div>
-                </div>
-                <div class="activity-meta">
-                  <span class="badge" [ngClass]="'badge-' + log.status">
-                    {{ log.status }}
-                  </span>
-                  <span class="activity-time">
-                    {{ log.sent_at ? (log.sent_at | date:'MMM d, HH:mm') : '—' }}
-                  </span>
-                </div>
+          <button type="button" class="ft-link" (click)="navigate('/email-log')">View all</button>
+        </div>
+
+        <div class="ft-activity__tools">
+          <div class="ft-activity__search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              type="search"
+              placeholder="Search customer or email..."
+              [ngModel]="activityQuery()"
+              (ngModelChange)="activityQuery.set($event)"
+            />
+          </div>
+          <div class="ft-filters">
+            <button type="button" class="ft-filter" [class.active]="activityFilter() === 'all'" (click)="setFilter('all')">All</button>
+            <button type="button" class="ft-filter" [class.active]="activityFilter() === 'sent'" (click)="setFilter('sent')">Sent</button>
+            <button type="button" class="ft-filter" [class.active]="activityFilter() === 'pending'" (click)="setFilter('pending')">Pending</button>
+            <button type="button" class="ft-filter" [class.active]="activityFilter() === 'failed'" (click)="setFilter('failed')">Failed</button>
+          </div>
+        </div>
+
+        @if (loading()) {
+          <div class="ft-activity__loading">
+            @for (i of [1,2,3,4,5]; track i) {
+              <div class="ft-skel-row">
+                <div class="skeleton ft-skel-a"></div>
+                <div class="skeleton ft-skel-b"></div>
+                <div class="skeleton ft-skel-c"></div>
               </div>
             }
           </div>
-        </div>
-      }
+        } @else if (filteredLogs().length === 0) {
+          <div class="ft-empty ft-empty--activity">
+            <app-icon-activity [size]="28" />
+            <h3>No activity yet</h3>
+            <p>Email history will appear here once you start sending campaigns.</p>
+          </div>
+        } @else {
+          <div class="ft-table-wrap">
+            <table class="ft-table">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (log of filteredLogs(); track log.id) {
+                  <tr>
+                    <td>
+                      <div class="ft-customer">
+                        <span class="ft-avatar">{{ (log.company_name || log.recipient_email || '?').charAt(0).toUpperCase() }}</span>
+                        <span class="ft-customer__name">{{ log.company_name || '—' }}</span>
+                      </div>
+                    </td>
+                    <td class="ft-mono">{{ log.recipient_email }}</td>
+                    <td>
+                      <span class="ft-status" [attr.data-status]="log.status">{{ log.status }}</span>
+                    </td>
+                    <td class="ft-muted">{{ log.sent_at ? (log.sent_at | date:'MMM d, HH:mm') : '—' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
     </div>
-  </section>
+
+    <!-- Right widgets -->
+    <aside class="ft-side">
+      <div class="ft-card ft-score">
+        <div class="ft-card__head">
+          <h2 class="ft-card__title">Delivery Score</h2>
+        </div>
+        @if (loading()) {
+          <app-skeleton-card [height]="120" />
+        } @else {
+          <div class="ft-score__ring" [style.--p]="successRate()">
+            <div class="ft-score__inner">
+              <strong>{{ successRate() }}%</strong>
+              <span>Success</span>
+            </div>
+          </div>
+          <p class="ft-score__note">Email delivery success across all sends</p>
+        }
+      </div>
+
+      <div class="ft-card ft-growth">
+        <div class="ft-growth__top">
+          <span class="ft-growth__label">Contact growth</span>
+          <app-icon-trend-up [size]="16" />
+        </div>
+        <div class="ft-growth__value">{{ contactRate() }}%</div>
+        <p class="ft-growth__sub">{{ stats().contacted | number }} of {{ stats().total | number }} companies contacted</p>
+        <div class="ft-growth__bar">
+          <span [style.width.%]="contactRate()"></span>
+        </div>
+      </div>
+
+      <div class="ft-card ft-actions">
+        <div class="ft-card__head">
+          <h2 class="ft-card__title">Quick Actions</h2>
+        </div>
+        <div class="ft-actions__list">
+          @for (action of quickActions; track action.path) {
+            <button type="button" class="ft-action" (click)="navigate(action.path)">
+              <span class="ft-action__icon" [style.background]="action.color + '14'" [style.color]="action.color">
+                <ng-container *ngComponentOutlet="action.icon; inputs: { size: 15 }"></ng-container>
+              </span>
+              <span class="ft-action__text">
+                <strong>{{ action.label }}</strong>
+                <small>{{ action.sub }}</small>
+              </span>
+              <app-icon-chevron-right class="ft-action__chev" />
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="ft-card ft-notes">
+        <div class="ft-card__head">
+          <h2 class="ft-card__title">Notifications</h2>
+        </div>
+        <ul class="ft-notes__list">
+          <li>
+            <span class="ft-notes__dot ft-notes__dot--coral"></span>
+            <div>
+              <strong>Pipeline ready</strong>
+              <p>{{ stats().pending | number }} companies awaiting contact</p>
+            </div>
+          </li>
+          <li>
+            <span class="ft-notes__dot ft-notes__dot--ink"></span>
+            <div>
+              <strong>Sent today</strong>
+              <p>{{ stats().sentToday | number }} emails dispatched</p>
+            </div>
+          </li>
+          <li>
+            <span class="ft-notes__dot"></span>
+            <div>
+              <strong>Emails enriched</strong>
+              <p>{{ stats().totalEmails | number }} contacts discovered</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </aside>
+  </div>
 </div>

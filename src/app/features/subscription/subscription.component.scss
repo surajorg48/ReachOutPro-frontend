@@ -6,12 +6,12 @@
   flex-wrap: wrap;
   gap: 16px;
   padding: 14px 18px;
-  background: #f0fdfa;
-  border: 1px solid #99f6e4;
+  background: #FDF0EC;
+  border: 1px solid #F4B8A8;
   border-radius: 12px;
   margin-bottom: 24px;
   font-size: 0.9rem;
-  color: #0f766e;
+  color: #D14E33;
 }
 .plans-grid {
   display: grid;
@@ -27,8 +27,8 @@
   flex-direction: column;
 }
 .plan-card.featured {
-  border-color: #0d9488;
-  box-shadow: 0 8px 30px rgba(13, 148, 136, 0.12);
+  border-color: #E85D3F;
+  box-shadow: 0 8px 30px rgba(232, 93, 63, 0.12);
 }
 h3 { margin: 0 0 8px; font-size: 1.25rem; }
 .desc { color: #64748b; font-size: 0.9rem; min-height: 40px; }
@@ -47,13 +47,13 @@ ul {
   font-size: 0.9rem;
 }
 li { margin: 6px 0; }
-li::before { content: '✓ '; color: #0d9488; }
+li::before { content: '✓ '; color: #E85D3F; }
 .buy-btn {
   margin-top: auto;
   border: none;
   border-radius: 999px;
   padding: 12px;
-  background: linear-gradient(135deg, #0d9488, #14b8a6);
+  background: linear-gradient(135deg, #E85D3F, #F07A61);
   color: #fff;
   font-weight: 600;
   cursor: pointer;
