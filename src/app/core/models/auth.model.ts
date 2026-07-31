@@ -35,6 +35,13 @@ export interface LoginResponse {
   user: User;
 }
 
+export interface GoogleLoginResponse {
+  success: boolean;
+  token: string;
+  tokens: AuthTokens;
+  user: User;
+}
+
 export interface RegisterRequest {
   organizationName: string;
   fullName: string;

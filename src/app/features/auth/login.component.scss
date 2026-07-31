@@ -268,6 +268,10 @@
   gap: 10px;
 }
 
+.social-row--google {
+  grid-template-columns: 1fr;
+}
+
 .btn-social {
   height: 46px;
   display: inline-flex;

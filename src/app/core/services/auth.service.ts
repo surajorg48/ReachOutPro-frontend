@@ -7,13 +7,16 @@ import {
   User,
   AuthTokens,
   LoginResponse,
+  GoogleLoginResponse,
   RegisterRequest,
 } from '../models/auth.model';
+import { GoogleAuthService } from './google-auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
+  private googleAuth = inject(GoogleAuthService);
   private readonly baseUrl = environment.apiUrl;
   private readonly ACCESS_TOKEN_KEY = 'rap_access_token';
   private readonly REFRESH_TOKEN_KEY = 'rap_refresh_token';
@@ -23,7 +26,7 @@ export class AuthService {
   private refreshInProgress: Observable<AuthTokens | null> | null = null;
 
   readonly user = this.userSignal.asReadonly();
-  readonly isAuthenticated = computed(() => !!this.userSignal());
+  readonly isAuthenticated = computed(() => !!this.userSignal() && !!this.getAccessToken());
   readonly userRole = computed(() => this.userSignal()?.role ?? null);
   readonly orgId = computed(() => this.userSignal()?.orgId ?? null);
 
@@ -48,6 +51,23 @@ export class AuthService {
     return this.http
       .post<LoginResponse>(`${this.baseUrl}/auth/verify-otp`, { email, code, purpose })
       .pipe(tap((res) => this.handleAuthResponse(res)));
+  }
+
+  /**
+   * Exchange a Google Identity Services ID token for app JWTs.
+   * POST /auth/google  { idToken }
+   */
+  loginWithGoogle(idToken: string): Observable<GoogleLoginResponse> {
+    return this.http
+      .post<GoogleLoginResponse>(`${this.baseUrl}/auth/google`, { idToken })
+      .pipe(
+        tap((res) => {
+          if (!res?.tokens?.accessToken || !res.user) {
+            throw new Error('Invalid Google auth response from server');
+          }
+          this.handleAuthResponse({ tokens: res.tokens, user: res.user });
+        }),
+      );
   }
 
   refreshTokens(): Observable<AuthTokens | null> {
@@ -145,6 +165,11 @@ export class AuthService {
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     this.userSignal.set(null);
+    try {
+      this.googleAuth.disableAutoSelect();
+    } catch {
+      // GIS may not be loaded yet
+    }
   }
 
   private loadStoredUser(): User | null {

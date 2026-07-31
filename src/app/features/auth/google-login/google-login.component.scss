@@ -1,0 +1,85 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.google-login {
+  width: 100%;
+}
+
+.google-login__btn-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  justify-content: center;
+}
+
+.google-login__host {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+}
+
+.google-login__host ::ng-deep > div {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center;
+}
+
+.google-login__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #111111;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 2;
+}
+
+.google-login__spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #E5E7EB;
+  border-top-color: #E85D3F;
+  border-radius: 50%;
+  animation: googleSpin 0.7s linear infinite;
+}
+
+@keyframes googleSpin {
+  to { transform: rotate(360deg); }
+}
+
+.google-login__error {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #FEF2F2;
+  color: #B91C1C;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.google-login__hint {
+  margin: 0;
+  text-align: center;
+  color: #9CA3AF;
+  font-size: 12px;
+}
+
+.is-loading .google-login__host {
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+@media (max-width: 480px) {
+  .google-login__host {
+    min-height: 40px;
+  }
+}

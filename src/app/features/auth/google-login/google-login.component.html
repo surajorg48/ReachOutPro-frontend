@@ -1,0 +1,22 @@
+<div class="google-login">
+  @if (!configured()) {
+    <p class="google-login__hint" role="status">
+      Google Sign-In unavailable (client ID missing)
+    </p>
+  } @else {
+    <div class="google-login__btn-wrap" [class.is-loading]="loading()">
+      <div #googleBtnHost class="google-login__host" aria-label="Continue with Google"></div>
+
+      @if (loading()) {
+        <div class="google-login__overlay" aria-live="polite" aria-busy="true">
+          <span class="google-login__spinner"></span>
+          <span>Signing in…</span>
+        </div>
+      }
+    </div>
+
+    @if (error()) {
+      <div class="google-login__error" role="alert">{{ error() }}</div>
+    }
+  }
+</div>

@@ -4,11 +4,12 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { OtpInputComponent } from '../../shared/components/otp-input/otp-input.component';
+import { GoogleLoginComponent } from './google-login/google-login.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, OtpInputComponent],
+  imports: [CommonModule, FormsModule, RouterLink, OtpInputComponent, GoogleLoginComponent],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })
