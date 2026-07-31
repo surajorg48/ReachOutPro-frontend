@@ -210,6 +210,10 @@ export class TopbarComponent implements OnInit {
     this.mobileNavOpen.set(false);
   }
 
+  isAdmin(): boolean {
+    return this.authService.hasRole('admin');
+  }
+
   onLogout() {
     this.closeMenus();
     this.authService.logout().subscribe();

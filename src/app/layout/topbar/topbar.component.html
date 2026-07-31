@@ -177,16 +177,19 @@
   @if (mobileNavOpen()) {
     <nav class="app-header__mobile-nav" aria-label="Mobile navigation">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenus()">Dashboard</a>
-      <a routerLink="/leads" routerLinkActive="active" (click)="closeMenus()">Leads</a>
+      <!-- <a routerLink="/leads" routerLinkActive="active" (click)="closeMenus()">Leads</a>
       <a routerLink="/customers" routerLinkActive="active" (click)="closeMenus()">Customers</a>
-      <a routerLink="/loans" routerLinkActive="active" (click)="closeMenus()">Loans</a>
+      <a routerLink="/loans" routerLinkActive="active" (click)="closeMenus()">Loans</a> -->
       <a routerLink="/payments" routerLinkActive="active" (click)="closeMenus()">Payments</a>
       <a routerLink="/analytics" routerLinkActive="active" (click)="closeMenus()">Analytics</a>
       <a routerLink="/companies" routerLinkActive="active" (click)="closeMenus()">Companies</a>
       <a routerLink="/campaigns" routerLinkActive="active" (click)="closeMenus()">Campaigns</a>
-      <a routerLink="/wallet" routerLinkActive="active" (click)="closeMenus()">Wallet</a>
+      <!-- <a routerLink="/wallet" routerLinkActive="active" (click)="closeMenus()">Wallet</a> -->
       <a routerLink="/settings" routerLinkActive="active" (click)="closeMenus()">Settings</a>
       <a routerLink="/help" routerLinkActive="active" (click)="closeMenus()">Help</a>
+      @if (isAdmin()) {
+        <a routerLink="/admin/plans" routerLinkActive="active" (click)="closeMenus()">Admin Plans</a>
+      }
     </nav>
   }
 </header>
