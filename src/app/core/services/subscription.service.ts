@@ -4,6 +4,8 @@ import { Observable, from, switchMap, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   CreateOrderResponse,
+  PricingPreview,
+  SubscriptionCoupon,
   SubscriptionPlan,
 } from '../models/auth.model';
 import { AuthService } from './auth.service';
@@ -31,12 +33,31 @@ export class SubscriptionService {
       subscriptionExpiry: string | null;
       remainingEmailLimit: number;
       remainingExportLimit: number;
+      daysRemaining?: number;
     }>(`${this.baseUrl}/subscription/status`);
   }
 
-  createOrder(subscriptionId: string): Observable<CreateOrderResponse> {
+  preview(subscriptionId: string, couponCode?: string) {
+    return this.http.post<PricingPreview>(`${this.baseUrl}/subscription/preview`, {
+      subscriptionId,
+      couponCode,
+    });
+  }
+
+  validateCoupon(subscriptionId: string, couponCode: string) {
+    return this.http.post<{
+      valid: boolean;
+      message: string;
+      couponCode: string;
+      couponDiscount: number;
+      finalAmount: number;
+    }>(`${this.baseUrl}/subscription/validate-coupon`, {subscriptionId, couponCode});
+  }
+
+  createOrder(subscriptionId: string, couponCode?: string): Observable<CreateOrderResponse> {
     return this.http.post<CreateOrderResponse>(`${this.baseUrl}/subscription/create-order`, {
       subscriptionId,
+      couponCode,
     });
   }
 
@@ -49,9 +70,19 @@ export class SubscriptionService {
     return this.http.post<{ message: string }>(`${this.baseUrl}/subscription/verify`, body);
   }
 
-  checkout(plan: SubscriptionPlan): Observable<{ message: string }> {
-    return this.createOrder(plan.id).pipe(
-      switchMap((order) => from(this.loadRazorpayScript()).pipe(switchMap(() => this.openCheckout(plan, order)))),
+  getHistory() {
+    return this.http.get<{ data: any[] }>(`${this.baseUrl}/subscription/history`);
+  }
+
+  getInvoice(id: string) {
+    return this.http.get(`${this.baseUrl}/subscription/invoice/${id}`);
+  }
+
+  checkout(plan: SubscriptionPlan, couponCode?: string): Observable<{ message: string }> {
+    return this.createOrder(plan.id, couponCode).pipe(
+      switchMap((order) =>
+        from(this.loadRazorpayScript()).pipe(switchMap(() => this.openCheckout(plan, order))),
+      ),
     );
   }
 
@@ -60,11 +91,11 @@ export class SubscriptionService {
     return this.http.get<{ data: SubscriptionPlan[] }>(`${this.baseUrl}/admin/subscription-plans`);
   }
 
-  adminCreatePlan(plan: Partial<SubscriptionPlan> & { validityDays: number; emailLimit: number; exportLimit: number }) {
+  adminCreatePlan(plan: Record<string, unknown>) {
     return this.http.post(`${this.baseUrl}/admin/subscription-plans`, plan);
   }
 
-  adminUpdatePlan(id: string, plan: Partial<SubscriptionPlan> & { validityDays?: number; emailLimit?: number; exportLimit?: number }) {
+  adminUpdatePlan(id: string, plan: Record<string, unknown>) {
     return this.http.put(`${this.baseUrl}/admin/subscription-plans/${id}`, plan);
   }
 
@@ -74,6 +105,34 @@ export class SubscriptionService {
 
   adminSetStatus(id: string, status: 'active' | 'inactive') {
     return this.http.patch(`${this.baseUrl}/admin/subscription-plans/${id}/status`, { status });
+  }
+
+  adminListCoupons() {
+    return this.http.get<{ data: SubscriptionCoupon[] }>(`${this.baseUrl}/admin/coupons`);
+  }
+
+  adminCreateCoupon(coupon: Record<string, unknown>) {
+    return this.http.post(`${this.baseUrl}/admin/coupons`, coupon);
+  }
+
+  adminUpdateCoupon(id: string, coupon: Record<string, unknown>) {
+    return this.http.put(`${this.baseUrl}/admin/coupons/${id}`, coupon);
+  }
+
+  adminDeleteCoupon(id: string) {
+    return this.http.delete(`${this.baseUrl}/admin/coupons/${id}`);
+  }
+
+  adminSetCouponStatus(id: string, status: 'ACTIVE' | 'INACTIVE') {
+    return this.http.patch(`${this.baseUrl}/admin/coupons/${id}/status`, { status });
+  }
+
+  adminPurchases() {
+    return this.http.get<{ data: any[] }>(`${this.baseUrl}/admin/subscription-purchases`);
+  }
+
+  adminReports() {
+    return this.http.get(`${this.baseUrl}/admin/subscription-reports`);
   }
 
   private openCheckout(plan: SubscriptionPlan, order: CreateOrderResponse): Observable<{ message: string }> {
@@ -96,7 +155,11 @@ export class SubscriptionService {
           name: user?.fullName ?? '',
         },
         theme: { color: '#E85D3F' },
-        handler: (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+        handler: (response: {
+          razorpay_order_id: string;
+          razorpay_payment_id: string;
+          razorpay_signature: string;
+        }) => {
           this.verifyPayment({
             subscriptionId: plan.id,
             orderId: response.razorpay_order_id,

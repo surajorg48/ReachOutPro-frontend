@@ -1,6 +1,12 @@
 <div class="page">
   <header class="page-header">
-    <h1>Manage Subscription Plans</h1>
+    <div>
+      <h1>Manage Subscription Plans</h1>
+      <p class="subnav">
+        <a routerLink="/admin/plans">Plans</a>
+        <a routerLink="/admin/coupons">Coupons</a>
+      </p>
+    </div>
     <button type="button" class="btn-add" (click)="startCreate()">+ Add Plan</button>
   </header>
 
@@ -17,7 +23,15 @@
       <div class="grid">
         <label>Name<input [(ngModel)]="form.name" name="name" required /></label>
         <label>Amount (INR)<input type="number" [(ngModel)]="form.amount" name="amount" required min="0" step="0.01" /></label>
-        <label>Validity (days)<input type="number" [(ngModel)]="form.validityDays" name="validityDays" required min="1" /></label>
+        <label>Duration Type
+          <select [(ngModel)]="form.durationType" name="durationType">
+            <option value="MONTH">Month</option>
+            <option value="DAY">Day</option>
+            <option value="YEAR">Year</option>
+          </select>
+        </label>
+        <label>Duration<input type="number" [(ngModel)]="form.duration" name="duration" required min="1" /></label>
+        <label>Validity Days (legacy)<input type="number" [(ngModel)]="form.validityDays" name="validityDays" min="1" /></label>
         <label>Email Limit<input type="number" [(ngModel)]="form.emailLimit" name="emailLimit" required min="0" /></label>
         <label>Export Limit<input type="number" [(ngModel)]="form.exportLimit" name="exportLimit" required min="0" /></label>
         <label>Status
@@ -26,8 +40,22 @@
             <option value="inactive">Inactive</option>
           </select>
         </label>
+        <label class="check"><input type="checkbox" [(ngModel)]="form.offerEnabled" name="offerEnabled" /> Offer Enabled</label>
+        <label>Offer %<input type="number" [(ngModel)]="form.offerPercentage" name="offerPercentage" min="0" max="100" /></label>
+        <label>Offer Start<input type="datetime-local" [(ngModel)]="form.offerStart" name="offerStart" /></label>
+        <label>Offer End<input type="datetime-local" [(ngModel)]="form.offerEnd" name="offerEnd" /></label>
+        <label>Badge Text<input [(ngModel)]="form.badgeText" name="badgeText" placeholder="30% OFF" /></label>
+        <label>Badge Color
+          <select [(ngModel)]="form.badgeColor" name="badgeColor">
+            <option value="orange">Orange</option>
+            <option value="green">Green</option>
+            <option value="red">Red</option>
+          </select>
+        </label>
+        <label class="check"><input type="checkbox" [(ngModel)]="form.recommendedPlan" name="recommendedPlan" /> Recommended</label>
       </div>
       <label class="full">Description<textarea [(ngModel)]="form.description" name="description" rows="2"></textarea></label>
+      <label class="full">Features (one per line)<textarea [(ngModel)]="form.features" name="features" rows="3" placeholder="Unlimited campaigns&#10;Priority support"></textarea></label>
       <div class="form-actions">
         <button type="button" class="btn-secondary" (click)="cancelForm()">Cancel</button>
         <button type="submit" class="btn-primary">{{ editingId() ? 'Update' : 'Create' }}</button>
@@ -40,9 +68,10 @@
       <tr>
         <th>Name</th>
         <th>Amount</th>
-        <th>Validity</th>
-        <th>Email Limit</th>
-        <th>Export Limit</th>
+        <th>Duration</th>
+        <th>Offer</th>
+        <th>Email</th>
+        <th>Export</th>
         <th>Status</th>
         <th>Actions</th>
       </tr>
@@ -50,9 +79,10 @@
     <tbody>
       @for (plan of plans(); track plan.id) {
         <tr>
-          <td>{{ plan.name }}</td>
+          <td>{{ plan.name }} @if (plan.recommendedPlan) { ★ }</td>
           <td>₹{{ plan.amount }}</td>
-          <td>{{ plan.validityDays }}d</td>
+          <td>{{ plan.duration }} {{ plan.durationType || 'DAY' }}</td>
+          <td>@if (plan.offerEnabled) { {{ plan.offerPercentage }}% } @else { — }</td>
           <td>{{ plan.emailLimit }}</td>
           <td>{{ plan.exportLimit }}</td>
           <td><span class="badge" [class.active]="plan.status === 'active'">{{ plan.status }}</span></td>

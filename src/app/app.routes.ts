@@ -102,6 +102,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/admin/admin-plans.component').then(m => m.AdminPlansComponent),
       },
+      {
+        path: 'admin/coupons',
+        loadComponent: () =>
+          import('./features/admin/admin-coupons.component').then(m => m.AdminCouponsComponent),
+      },
 
       // FinTech UI shells
       {

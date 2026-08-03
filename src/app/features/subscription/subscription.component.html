@@ -1,46 +1,138 @@
-<div class="page">
-  <header class="page-header">
-    <h1>Subscription Plans</h1>
-    <p>Choose a plan that fits your outreach needs</p>
+<div class="sub-page">
+  <header class="sub-hero">
+    <div>
+      <p class="eyebrow">Pricing</p>
+      <h1>Choose your plan</h1>
+      <p class="lede">Flexible durations, live offers, and coupon savings — pay only for what you need.</p>
+    </div>
+    @if (user()) {
+      <div class="status-card">
+        <p class="status-label">Current plan</p>
+        <p class="status-name">{{ user()?.subscriptionName ?? 'Free' }}</p>
+        @if (user()?.subscriptionExpiry) {
+          <p class="status-meta">Expires {{ user()?.subscriptionExpiry }}</p>
+        }
+        <div class="status-stats">
+          <span>{{ user()?.remainingEmailLimit ?? 0 }} emails left today</span>
+          <span>{{ user()?.remainingExportLimit ?? 0 }} exports left</span>
+        </div>
+      </div>
+    }
   </header>
 
-  @if (user()) {
-    <div class="current-plan">
-      <span>Current: <strong>{{ user()?.subscriptionName ?? 'Free' }}</strong></span>
-      @if (user()?.subscriptionExpiry) {
-        <span>Expires: {{ user()?.subscriptionExpiry }}</span>
-      }
-      <span>Emails left today: {{ user()?.remainingEmailLimit ?? 0 }}</span>
-      <span>Exports left: {{ user()?.remainingExportLimit ?? 0 }}</span>
-    </div>
-  }
-
   @if (error()) {
-    <div class="alert">{{ error() }}</div>
+    <div class="alert" role="alert">{{ error() }}</div>
   }
 
   @if (loading()) {
-    <p class="loading">Loading plans...</p>
+    <div class="skeleton-grid">
+      @for (i of [1,2,3]; track i) {
+        <div class="skeleton-card"></div>
+      }
+    </div>
+  } @else if (!plans().length) {
+    <div class="empty">No purchasable plans available right now.</div>
   } @else {
     <div class="plans-grid">
       @for (plan of plans(); track plan.id) {
-        <div class="plan-card" [class.featured]="plan.name === 'Pro'">
+        <article class="plan-card" [class.is-recommended]="plan.recommended || plan.name === 'Pro'">
+          @if (plan.badgeText) {
+            <span class="offer-badge" [class]="badgeClass(plan.badgeColor)">🔥 {{ plan.badgeText }}</span>
+          }
+          @if (plan.recommended || plan.name === 'Pro') {
+            <span class="rec-badge">Recommended</span>
+          }
+
           <h3>{{ plan.name }}</h3>
           <p class="desc">{{ plan.description }}</p>
-          <div class="price">₹{{ plan.amount | number:'1.0-0' }}<span>/{{ plan.validityDays }} days</span></div>
-          <ul>
+
+          <div class="price-block">
+            <span class="price">₹{{ displayPrice(plan) | number:'1.0-0' }}</span>
+            @if (plan.offerActive && plan.offerPrice != null && plan.offerPrice < plan.amount) {
+              <span class="strike">₹{{ plan.amount | number:'1.0-0' }}</span>
+            }
+            <span class="duration">{{ plan.durationLabel || (plan.validityDays + ' Days') }}</span>
+          </div>
+
+          <ul class="features">
             <li>{{ plan.emailLimit }} emails / day</li>
             <li>{{ plan.exportLimit }} exports / period</li>
+            @for (f of plan.features || []; track f) {
+              <li>{{ f }}</li>
+            }
           </ul>
-          <button
-            class="buy-btn"
-            [disabled]="buying() === plan.id"
-            (click)="buy(plan)"
-          >
-            @if (buying() === plan.id) { Processing... } @else { Buy Now }
-          </button>
-        </div>
+
+          @if (plan.couponAvailable) {
+            <p class="coupon-hint">Coupon Available</p>
+          }
+
+          <button type="button" class="buy-btn" (click)="openCheckout(plan)">Buy Now</button>
+        </article>
       }
     </div>
   }
+
+  @if (history().length) {
+    <section class="history">
+      <h2>Purchase History</h2>
+      <div class="history-table">
+        @for (row of history(); track row.id) {
+          <div class="history-row">
+            <div>
+              <strong>{{ row.planName }}</strong>
+              <span>{{ row.invoiceNumber || row.id }}</span>
+            </div>
+            <div>₹{{ row.paidAmount | number:'1.0-0' }}</div>
+            <div>{{ row.startDate | date:'mediumDate' }} → {{ row.endDate | date:'mediumDate' }}</div>
+            <div class="pill">{{ row.status }}</div>
+          </div>
+        }
+      </div>
+    </section>
+  }
 </div>
+
+@if (checkoutOpen() && selectedPlan()) {
+  <div class="checkout-backdrop" (click)="closeCheckout()"></div>
+  <aside class="checkout-panel" role="dialog" aria-modal="true">
+    <header>
+      <h2>Checkout</h2>
+      <button type="button" class="close" (click)="closeCheckout()" aria-label="Close">×</button>
+    </header>
+
+    <div class="checkout-body">
+      <p class="plan-line"><strong>{{ selectedPlan()!.name }}</strong></p>
+      <p class="muted">{{ preview()?.durationLabel || selectedPlan()!.durationLabel }}</p>
+
+      <div class="summary">
+        <div><span>Original Price</span><span>₹{{ preview()?.originalAmount ?? selectedPlan()!.amount | number:'1.0-0' }}</span></div>
+        <div><span>Offer Discount</span><span class="green">-₹{{ preview()?.offerDiscount ?? 0 | number:'1.0-0' }}</span></div>
+        <div><span>Coupon Discount</span><span class="green">-₹{{ preview()?.couponDiscount ?? 0 | number:'1.0-0' }}</span></div>
+        <div><span>GST</span><span>₹{{ preview()?.gst ?? 0 | number:'1.0-0' }}</span></div>
+        <div class="total"><span>Final Amount</span><span>₹{{ preview()?.finalAmount ?? displayPrice(selectedPlan()!) | number:'1.0-0' }}</span></div>
+      </div>
+
+      <label class="coupon-field">
+        <span>Coupon Code</span>
+        <div class="coupon-row">
+          <input type="text" [(ngModel)]="couponCode" name="coupon" placeholder="WELCOME30" [disabled]="buying()" />
+          <button type="button" class="apply" (click)="applyCoupon()" [disabled]="applyingCoupon() || buying()">Apply</button>
+          @if (couponCode) {
+            <button type="button" class="remove" (click)="removeCoupon()" [disabled]="buying()">Remove</button>
+          }
+        </div>
+      </label>
+
+      @if (couponMessage()) {
+        <p class="ok">{{ couponMessage() }}</p>
+      }
+      @if (couponError()) {
+        <p class="err">{{ couponError() }}</p>
+      }
+
+      <button type="button" class="pay-btn" (click)="confirmPay()" [disabled]="buying()">
+        @if (buying()) { Processing… } @else { Pay ₹{{ preview()?.finalAmount ?? displayPrice(selectedPlan()!) | number:'1.0-0' }} }
+      </button>
+    </div>
+  </aside>
+}

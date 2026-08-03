@@ -1,0 +1,79 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1>Manage Coupons</h1>
+      <p class="subnav">
+        <a routerLink="/admin/plans">Plans</a>
+        <a routerLink="/admin/coupons">Coupons</a>
+      </p>
+    </div>
+    <button type="button" class="btn-add" (click)="startCreate()">+ Add Coupon</button>
+  </header>
+
+  @if (message()) { <div class="alert success">{{ message() }}</div> }
+  @if (error()) { <div class="alert error">{{ error() }}</div> }
+
+  @if (showForm()) {
+    <form class="plan-form" (submit)="save($event)">
+      <h3>{{ editingId() ? 'Edit Coupon' : 'New Coupon' }}</h3>
+      <div class="grid">
+        <label>Code<input [(ngModel)]="form.couponCode" name="couponCode" required [disabled]="!!editingId()" /></label>
+        <label>Description<input [(ngModel)]="form.description" name="description" /></label>
+        <label>Type
+          <select [(ngModel)]="form.discountType" name="discountType">
+            <option value="PERCENTAGE">Percentage</option>
+            <option value="FLAT">Flat</option>
+          </select>
+        </label>
+        <label>Value<input type="number" [(ngModel)]="form.discountValue" name="discountValue" required min="0" /></label>
+        <label>Min Purchase<input type="number" [(ngModel)]="form.minimumAmount" name="minimumAmount" min="0" /></label>
+        <label>Max Discount<input type="number" [(ngModel)]="form.maximumDiscount" name="maximumDiscount" min="0" /></label>
+        <label>Expiry<input type="datetime-local" [(ngModel)]="form.expiryDate" name="expiryDate" /></label>
+        <label>Usage Limit<input type="number" [(ngModel)]="form.usageLimit" name="usageLimit" min="0" /></label>
+        <label>Per User Limit<input type="number" [(ngModel)]="form.perUserLimit" name="perUserLimit" min="1" /></label>
+        <label>Status
+          <select [(ngModel)]="form.status" name="status">
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+          </select>
+        </label>
+      </div>
+      <label class="full">Applicable Plan IDs (JSON array or empty = all)
+        <input [(ngModel)]="form.applicablePlans" name="applicablePlans" placeholder='["uuid-1","uuid-2"]' />
+      </label>
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="cancel()">Cancel</button>
+        <button type="submit" class="btn-primary">Save</button>
+      </div>
+    </form>
+  }
+
+  <table class="plans-table">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Type</th>
+        <th>Value</th>
+        <th>Used</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (c of coupons(); track c.id) {
+        <tr>
+          <td><strong>{{ c.couponCode }}</strong><div class="muted">{{ c.description }}</div></td>
+          <td>{{ c.discountType }}</td>
+          <td>{{ c.discountType === 'FLAT' ? ('₹' + c.discountValue) : (c.discountValue + '%') }}</td>
+          <td>{{ c.usedCount || 0 }}{{ c.usageLimit != null ? (' / ' + c.usageLimit) : '' }}</td>
+          <td><span class="badge" [class.active]="c.status === 'ACTIVE'">{{ c.status }}</span></td>
+          <td class="actions">
+            <button type="button" (click)="edit(c)">Edit</button>
+            <button type="button" (click)="toggle(c)">{{ c.status === 'ACTIVE' ? 'Disable' : 'Enable' }}</button>
+            <button type="button" class="danger" (click)="remove(c)">Delete</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
