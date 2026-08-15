@@ -10,49 +10,125 @@
         @if (step() === 'email') {
           <header class="form-header">
             <h1 class="form-title">Welcome back</h1>
-            <p class="form-subtitle">Sign in with a one-time code sent to your email</p>
+            <p class="form-subtitle">Sign in to your ReachOut Pro account</p>
           </header>
 
-          <form (submit)="onSendOtp($event)" class="auth-form">
-            <label class="field">
-              <span class="field-label">Business email</span>
-              <input
-                type="email"
-                [(ngModel)]="email"
-                name="email"
-                placeholder="you@company.com"
-                required
-                [disabled]="loading()"
-                class="field-input"
-                autocomplete="email"
-              />
-            </label>
-
-            <div class="helper-row">
-              <label class="remember">
-                <input type="checkbox" name="remember" checked />
-                <span>Remember this device</span>
-              </label>
-              <a routerLink="/auth/forgot-password" class="helper-link">Forgot password?</a>
-            </div>
-
-            @if (error()) {
-              <div class="alert-error" role="alert">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                <span>{{ error() }}</span>
-              </div>
-            }
-
-            <button type="submit" [disabled]="loading() || !email" class="btn-primary">
-              @if (loading()) {
-                <span class="spinner"></span>
-              } @else {
-                Continue
-              }
+          <div style="display: flex; gap: 8px; margin-bottom: 20px; background: rgba(0,0,0,0.04); padding: 4px; border-radius: 12px;">
+            <button 
+              type="button" 
+              (click)="loginMode.set('password')"
+              [style.background]="loginMode() === 'password' ? '#ffffff' : 'transparent'"
+              [style.fontWeight]="loginMode() === 'password' ? '600' : '400'"
+              style="flex: 1; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">
+              Password Login
             </button>
-          </form>
+            <button 
+              type="button" 
+              (click)="loginMode.set('otp')"
+              [style.background]="loginMode() === 'otp' ? '#ffffff' : 'transparent'"
+              [style.fontWeight]="loginMode() === 'otp' ? '600' : '400'"
+              style="flex: 1; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">
+              OTP Code Login
+            </button>
+          </div>
+
+          @if (loginMode() === 'password') {
+            <form (submit)="onPasswordLogin($event)" class="auth-form">
+              <label class="field">
+                <span class="field-label">Email address</span>
+                <input
+                  type="email"
+                  [(ngModel)]="email"
+                  name="email"
+                  placeholder="you@company.com"
+                  required
+                  [disabled]="loading()"
+                  class="field-input"
+                  autocomplete="email"
+                />
+              </label>
+
+              <label class="field">
+                <span class="field-label">Password</span>
+                <input
+                  type="password"
+                  [(ngModel)]="password"
+                  name="password"
+                  placeholder="Enter your password"
+                  required
+                  [disabled]="loading()"
+                  class="field-input"
+                  autocomplete="current-password"
+                />
+              </label>
+
+              <div class="helper-row">
+                <label class="remember">
+                  <input type="checkbox" name="remember" checked />
+                  <span>Remember this device</span>
+                </label>
+                <a routerLink="/auth/forgot-password" class="helper-link">Forgot password?</a>
+              </div>
+
+              @if (error()) {
+                <div class="alert-error" role="alert">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  <span>{{ error() }}</span>
+                </div>
+              }
+
+              <button type="submit" [disabled]="loading() || !email || !password" class="btn-primary">
+                @if (loading()) {
+                  <span class="spinner"></span>
+                } @else {
+                  Sign In
+                }
+              </button>
+            </form>
+          } @else {
+            <form (submit)="onSendOtp($event)" class="auth-form">
+              <label class="field">
+                <span class="field-label">Business email</span>
+                <input
+                  type="email"
+                  [(ngModel)]="email"
+                  name="email"
+                  placeholder="you@company.com"
+                  required
+                  [disabled]="loading()"
+                  class="field-input"
+                  autocomplete="email"
+                />
+              </label>
+
+              <div class="helper-row">
+                <label class="remember">
+                  <input type="checkbox" name="remember" checked />
+                  <span>Remember this device</span>
+                </label>
+                <a routerLink="/auth/forgot-password" class="helper-link">Forgot password?</a>
+              </div>
+
+              @if (error()) {
+                <div class="alert-error" role="alert">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  <span>{{ error() }}</span>
+                </div>
+              }
+
+              <button type="submit" [disabled]="loading() || !email" class="btn-primary">
+                @if (loading()) {
+                  <span class="spinner"></span>
+                } @else {
+                  Continue with OTP
+                }
+              </button>
+            </form>
+          }
 
           <div class="divider">
             <span>or continue with</span>

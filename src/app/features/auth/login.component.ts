@@ -18,10 +18,35 @@ export class LoginComponent {
   private router = inject(Router);
 
   email = '';
+  password = '';
+  loginMode = signal<'password' | 'otp'>('password');
   otpCode = signal('');
   step = signal<'email' | 'otp'>('email');
   loading = signal(false);
   error = signal('');
+
+  onPasswordLogin(event: Event) {
+    event.preventDefault();
+    if (!this.email || !this.password || this.loading()) return;
+
+    this.loading.set(true);
+    this.error.set('');
+
+    this.authService.loginWithPassword(this.email, this.password).subscribe({
+      next: (res) => {
+        this.loading.set(false);
+        if (res.user?.['role'] === 'admin' || res.user?.['role'] === 'super_admin') {
+          this.router.navigate(['/admin/plans']);
+        } else {
+          this.router.navigate(['/']);
+        }
+      },
+      error: (err: any) => {
+        this.error.set(err.userMessage || 'Invalid email or password');
+        this.loading.set(false);
+      },
+    });
+  }
 
   async onSendOtp(event: Event) {
     event.preventDefault();

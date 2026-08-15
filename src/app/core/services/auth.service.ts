@@ -53,6 +53,22 @@ export class AuthService {
       .pipe(tap((res) => this.handleAuthResponse(res)));
   }
 
+  loginWithPassword(email: string, password: string): Observable<LoginResponse> {
+    return this.http
+      .post<LoginResponse>(`${this.baseUrl}/auth/login-password`, { email, password })
+      .pipe(tap((res) => this.handleAuthResponse(res)));
+  }
+
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.baseUrl}/auth/forgot-password`, { email });
+  }
+
+  resetPassword(email: string, code: string, newPassword: string): Observable<LoginResponse> {
+    return this.http
+      .post<LoginResponse>(`${this.baseUrl}/auth/reset-password`, { email, code, newPassword })
+      .pipe(tap((res) => this.handleAuthResponse(res)));
+  }
+
   /**
    * Exchange a Google Identity Services ID token for app JWTs.
    * POST /auth/google  { idToken }
